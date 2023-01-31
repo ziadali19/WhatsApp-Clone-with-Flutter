@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "673394761789",
+    "project_id": "whatsapp-clone-ziad",
+    "storage_bucket": "whatsapp-clone-ziad.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:673394761789:android:833bd8caac2cdddd640a54",
+        "android_client_info": {
+          "package_name": "com.example.whatsapp_clone"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "673394761789-3j16osqe1rr3s748rml6bsirkenubh5i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBz-iuk1AluXWtDlDfkn6YRXWzOLG3jh3Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "673394761789-3j16osqe1rr3s748rml6bsirkenubh5i.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
