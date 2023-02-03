@@ -8,6 +8,9 @@ import '../../features/auth/controller/cubit/auth_cubit.dart';
 import '../../features/auth/controller/cubit/otb_cubit.dart';
 import '../../features/auth/data/remote_data_source/auth_remote_data_source.dart';
 import '../../features/auth/data/repository/auth_repository.dart';
+import '../../features/select_contacts/controller/cubit/contacts_cubit.dart';
+import '../../features/select_contacts/data/local_data_source/contacts_local_data_source.dart';
+import '../../features/select_contacts/data/repository/contacts_repository.dart';
 import '../common/firebase_storage/firebase_storage_remote_data_source.dart';
 import '../common/firebase_storage/firebase_storage_repository.dart';
 
@@ -30,5 +33,11 @@ class ServicesLocator {
         () => FirebaseStorageRepository(sl()));
     sl.registerLazySingleton<BaseFirebaseStorageRemoteDataSource>(
         () => FirebaseStorageRemoteDataSource(FirebaseStorage.instance));
+
+    sl.registerFactory(() => ContactsCubit(sl()));
+    sl.registerLazySingleton<BaseContactsRepository>(
+        () => ContactsRepository(sl()));
+    sl.registerLazySingleton<BaseContactsLocalDataSource>(
+        () => ContactsLocalDataSource(FirebaseFirestore.instance));
   }
 }

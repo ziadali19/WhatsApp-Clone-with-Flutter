@@ -17,6 +17,7 @@ import 'core/utilis/themes.dart';
 import 'features/auth/controller/cubit/auth_cubit.dart';
 import 'features/auth/controller/cubit/otb_cubit.dart';
 import 'features/auth/controller/cubit/user_information_cubit.dart';
+import 'features/select_contacts/controller/cubit/contacts_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -46,7 +47,10 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => sl<UserInformationCubit>(),
-        )
+        ),
+        /*  BlocProvider(
+          create: (context) => sl<ContactsCubit>()..getContacts(),
+        )*/
       ],
       child: ScreenUtilInit(
         designSize: const Size(411.42857142857144, 843.4285714285714),
