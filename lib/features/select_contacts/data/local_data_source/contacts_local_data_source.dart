@@ -5,7 +5,7 @@ import 'package:whatsapp_clone/core/utilis/constants.dart';
 import 'package:whatsapp_clone/features/auth/data/model/user_model.dart';
 
 import '../../../../core/network/network_exception.dart';
-import '../../../layout/presentation/screens/chat_screen.dart';
+import '../../../chat/presentation/screens/chat_screen.dart';
 
 abstract class BaseContactsLocalDataSource {
   Future<List<Contact>> getContacts();
@@ -38,11 +38,20 @@ class ContactsLocalDataSource extends BaseContactsLocalDataSource {
       QuerySnapshot<Map<String, dynamic>> users =
           await firebaseFirestore.collection('users').get();
       for (var user in users.docs) {
-        UserModel usersModel = UserModel.fromJson(user);
+        UserModel usersModel = UserModel.fromJson(user.data());
         if (contact.phones[0].number.replaceAll(' ', '') ==
             usersModel.phoneNumber) {
           isFound = true;
-          Navigator.pushNamed(context, ChatScreen.routeName);
+          Navigator.pushNamed(
+            context,
+            ChatScreen.routeName,
+            arguments: {
+              'uID': usersModel.uID,
+              'name': usersModel.name,
+              'isOnline': usersModel.isOnline,
+              'profilePic': usersModel.profilePic
+            },
+          );
         }
       }
       if (isFound == false) {

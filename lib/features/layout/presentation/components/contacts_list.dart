@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/utilis/constants.dart';
-import '../screens/chat_screen.dart';
+import '../../../chat/presentation/screens/chat_screen.dart';
 
 class ContactsList extends StatelessWidget {
   const ContactsList({super.key});
@@ -19,7 +19,13 @@ class ContactsList extends StatelessWidget {
             children: [
               InkWell(
                 onTap: () {
-                  Navigator.pushNamed(context, ChatScreen.routeName);
+                  Navigator.pushNamed(context, ChatScreen.routeName,
+                      arguments: {
+                        'uID': 'aaa',
+                        'name': 'Ali Abdelaziz',
+                        'isOnline': true,
+                        'profilePic': ''
+                      });
                 },
                 child: Padding(
                   padding: EdgeInsets.only(bottom: 8.0.h),

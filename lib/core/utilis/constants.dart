@@ -8,7 +8,7 @@ import 'package:whatsapp_clone/features/auth/presentation/screens/otb_screen.dar
 import 'package:whatsapp_clone/features/auth/presentation/screens/user_information_screen.dart';
 import 'package:whatsapp_clone/features/layout/presentation/screens/layout_screen.dart';
 
-import '../../features/layout/presentation/screens/chat_screen.dart';
+import '../../features/chat/presentation/screens/chat_screen.dart';
 import '../../features/select_contacts/presentation/screens/contacts_screen.dart';
 
 class AppConstants {
@@ -45,8 +45,14 @@ class AppConstants {
           builder: (context) => const ContactsScreen(),
         );
       case ChatScreen.routeName:
+        Map userData = settings.arguments as Map;
         return MaterialPageRoute(
-          builder: (context) => const ChatScreen(),
+          builder: (context) => ChatScreen(
+            uID: userData['uID'],
+            isOnline: userData['isOnline'],
+            name: userData['name'],
+            profilePic: userData['profilePic'],
+          ),
         );
       case OTBScreen.routeName:
         final verficationId = settings.arguments as String?;

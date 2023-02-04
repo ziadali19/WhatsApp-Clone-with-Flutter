@@ -15,6 +15,7 @@ abstract class BaseAuthRepository {
       BuildContext context, String verificationId, String userOTB);
   Future<Either<Failure, void>> saveUserDataToFirebase(String uID, model, path);
   Future<Either<Failure, UserModel>> getUserData();
+  Either<Failure, Stream<UserModel>> getAnyUserData(String uID);
 }
 
 class AuthRepository extends BaseAuthRepository {
@@ -50,6 +51,15 @@ class AuthRepository extends BaseAuthRepository {
     try {
       UserModel result = await baseAuthRemoteDataSource.getUserData();
       return right(result);
+    } on FireBaseException catch (e) {
+      return left(FirebaseFailure(e.message));
+    }
+  }
+
+  @override
+  Either<Failure, Stream<UserModel>> getAnyUserData(String uID) {
+    try {
+      return right(baseAuthRemoteDataSource.getAnyUserData(uID));
     } on FireBaseException catch (e) {
       return left(FirebaseFailure(e.message));
     }

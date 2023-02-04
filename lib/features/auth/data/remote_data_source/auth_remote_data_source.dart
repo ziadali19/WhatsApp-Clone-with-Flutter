@@ -15,6 +15,7 @@ abstract class BaseAuthRemoteDataSource {
       BuildContext context, String verificationId, String userOTB);
   Future saveUserDataToFirebase(String uID, model, String path);
   Future<UserModel> getUserData();
+  Stream<UserModel> getAnyUserData(String uID);
 }
 
 class AuthRemoteDataSource extends BaseAuthRemoteDataSource {
@@ -55,6 +56,20 @@ class AuthRemoteDataSource extends BaseAuthRemoteDataSource {
 
       return UserModel.fromJson(response.data());
     } on FirebaseAuthException catch (e) {
+      throw FireBaseException(e.code);
+    }
+  }
+
+  @override
+  Stream<UserModel> getAnyUserData(String uID) {
+    try {
+      Stream<UserModel> response = firebaseFirestore
+          .collection('users')
+          .doc(uID)
+          .snapshots()
+          .map((event) => UserModel.fromJson(event.data()));
+      return response;
+    } on FirebaseException catch (e) {
       throw FireBaseException(e.code);
     }
   }

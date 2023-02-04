@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:whatsapp_clone/features/layout/presentation/components/sender_message_card.dart';
+import 'package:whatsapp_clone/features/chat/presentation/components/sender_message_card.dart';
 
 import '../../../../core/utilis/constants.dart';
 import 'my_message_card.dart';
