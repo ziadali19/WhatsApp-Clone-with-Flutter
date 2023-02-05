@@ -8,7 +8,7 @@ class MessageModel {
   final MessageEnum messageType;
   final String messageId;
   final bool isSeen;
-  final dynamic timeSent;
+  final DateTime timeSent;
   MessageModel({
     required this.senderId,
     required this.recieverId,
@@ -26,7 +26,7 @@ class MessageModel {
       messageType: (json['messageType'] as String).toEnum(),
       messageId: json['messageId'] as String,
       isSeen: json['isSeen'] as bool,
-      timeSent: json['timeSent'].toString(),
+      timeSent: DateTime.parse(json['timeSent']),
     );
   }
   Map<String, dynamic> toJson() {
@@ -37,7 +37,7 @@ class MessageModel {
       'messageType': messageType.type,
       'messageId': messageId,
       'isSeen': isSeen,
-      'timeSent': DateFormat('hh:mm a').format(timeSent),
+      'timeSent': timeSent.toString(),
     };
   }
 }

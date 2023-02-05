@@ -15,6 +15,7 @@ abstract class BaseChatRemoteDataSource {
     required String recieverId,
     required String text,
   });
+  Stream<List<MessageModel>> getMessages(String recieverId);
 }
 
 class ChatRemoteDataSource extends BaseChatRemoteDataSource {
@@ -125,6 +126,30 @@ class ChatRemoteDataSource extends BaseChatRemoteDataSource {
           userName: senderUser.name!,
           recieverUserNam: recieverUser.name!,
           messageType: MessageEnum.text);
+    } on FirebaseException catch (e) {
+      throw FireBaseException(e.code);
+    }
+  }
+
+  @override
+  Stream<List<MessageModel>> getMessages(String recieverId) {
+    try {
+      return firebaseFirestore
+          .collection('users')
+          .doc(AppConstants.uID)
+          .collection('chats')
+          .doc(recieverId)
+          .collection('messages')
+          .orderBy('timeSent', descending: false)
+          .snapshots()
+          .map((event) {
+        List<MessageModel> messages = [];
+        for (QueryDocumentSnapshot<Map<String, dynamic>> message
+            in event.docs) {
+          messages.add(MessageModel.fromJson(message.data()));
+        }
+        return messages;
+      });
     } on FirebaseException catch (e) {
       throw FireBaseException(e.code);
     }

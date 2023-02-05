@@ -4,6 +4,7 @@ import 'package:whatsapp_clone/features/chat/data/remote_data_source/chat_remote
 
 import '../../../../core/network/failure.dart';
 import '../../../auth/data/model/user_model.dart';
+import '../model/message_model.dart';
 
 abstract class BaseChatRepository {
   Future<Either<Failure, void>> sendTextMessage({
@@ -11,6 +12,7 @@ abstract class BaseChatRepository {
     required String recieverId,
     required String text,
   });
+  Either<Failure, Stream<List<MessageModel>>> getMessages(String recieverId);
 }
 
 class ChatRepository extends BaseChatRepository {
@@ -26,6 +28,15 @@ class ChatRepository extends BaseChatRepository {
       await baseChatRemoteDataSource.sendTextMessage(
           senderUser: senderUser, recieverId: recieverId, text: text);
       return right(null);
+    } on FireBaseException catch (e) {
+      return left(FirebaseFailure(e.message));
+    }
+  }
+
+  @override
+  Either<Failure, Stream<List<MessageModel>>> getMessages(String recieverId) {
+    try {
+      return right(baseChatRemoteDataSource.getMessages(recieverId));
     } on FireBaseException catch (e) {
       return left(FirebaseFailure(e.message));
     }

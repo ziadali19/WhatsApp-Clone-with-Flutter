@@ -6,6 +6,7 @@ import 'package:meta/meta.dart';
 import 'package:whatsapp_clone/core/network/failure.dart';
 import 'package:whatsapp_clone/core/utilis/constants.dart';
 import 'package:whatsapp_clone/features/auth/data/repository/auth_repository.dart';
+import 'package:whatsapp_clone/features/chat/data/model/message_model.dart';
 import 'package:whatsapp_clone/features/chat/data/repository/chat_repository.dart';
 
 import '../../../auth/data/model/user_model.dart';
@@ -57,5 +58,18 @@ class ChatCubit extends Cubit<ChatState> {
       userModel = r;
       emit(GetUserDataSuccess());
     });
+  }
+
+  Stream<List<MessageModel>>? getMessages(String recieverId, context) {
+    Stream<List<MessageModel>>? messages;
+    Either<Failure, Stream<List<MessageModel>>> result =
+        baseChatRepository.getMessages(recieverId);
+
+    result.fold((l) {
+      AppConstants.showSnackBar(l.message, context, Colors.red);
+    }, (r) {
+      messages = r;
+    });
+    return messages;
   }
 }

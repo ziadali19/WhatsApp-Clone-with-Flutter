@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../core/utilis/constants.dart';
 import '../../../chat/data/model/chat_contact_model.dart';
@@ -67,7 +68,8 @@ class ContactsList extends StatelessWidget {
                                   radius: 30.r,
                                 ),
                                 trailing: Text(
-                                  snapshot.data![index].timeSent.toString(),
+                                  DateFormat('hh:mm aa')
+                                      .format(snapshot.data![index].timeSent),
                                   style: TextStyle(
                                     color: Colors.grey,
                                     fontSize: 13.sp,

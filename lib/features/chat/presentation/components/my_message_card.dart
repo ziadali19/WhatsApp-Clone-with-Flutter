@@ -15,7 +15,8 @@ class MyMessageCard extends StatelessWidget {
       alignment: Alignment.centerRight,
       child: ConstrainedBox(
         constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width - 45,
+          minWidth: 150.w,
+          maxWidth: MediaQuery.of(context).size.width - 45.w,
         ),
         child: Card(
           elevation: 1,
@@ -57,7 +58,7 @@ class MyMessageCard extends StatelessWidget {
                     Icon(
                       Icons.done_all,
                       size: 20.sp,
-                      color: Colors.white60,
+                      color: Colors.grey[400],
                     ),
                   ],
                 ),

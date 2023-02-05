@@ -86,8 +86,10 @@ class ChatScreen extends StatelessWidget {
             ),
             body: Column(
               children: [
-                const Expanded(
-                  child: ChatList(),
+                Expanded(
+                  child: ChatList(
+                    recieverId: uID!,
+                  ),
                 ),
                 BottomChatTextField(
                   recieverId: uID!,
