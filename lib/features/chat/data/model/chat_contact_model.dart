@@ -1,7 +1,9 @@
+import 'package:intl/intl.dart';
+
 class ChatContactModel {
   final String? name;
   final String? profilePic;
-  final DateTime? timeSent;
+  final dynamic timeSent;
   final String? lastMessage;
   final String? contactId;
 
@@ -25,7 +27,7 @@ class ChatContactModel {
     return {
       'name': name,
       'profilePic': profilePic,
-      'timeSent': timeSent,
+      'timeSent': DateFormat('hh:mm a').format(timeSent!),
       'lastMessage': lastMessage,
       'contactId': contactId
     };

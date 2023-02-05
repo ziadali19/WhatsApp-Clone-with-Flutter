@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:whatsapp_clone/core/common/enums/messgae_enum.dart';
 
 class MessageModel {
@@ -7,7 +8,7 @@ class MessageModel {
   final MessageEnum messageType;
   final String messageId;
   final bool isSeen;
-  final DateTime timeSent;
+  final dynamic timeSent;
   MessageModel({
     required this.senderId,
     required this.recieverId,
@@ -25,7 +26,7 @@ class MessageModel {
       messageType: (json['messageType'] as String).toEnum(),
       messageId: json['messageId'] as String,
       isSeen: json['isSeen'] as bool,
-      timeSent: json['timeSent'],
+      timeSent: json['timeSent'].toString(),
     );
   }
   Map<String, dynamic> toJson() {
@@ -36,7 +37,7 @@ class MessageModel {
       'messageType': messageType.type,
       'messageId': messageId,
       'isSeen': isSeen,
-      'timeSent': timeSent,
+      'timeSent': DateFormat('hh:mm a').format(timeSent),
     };
   }
 }
