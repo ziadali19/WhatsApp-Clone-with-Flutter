@@ -24,6 +24,11 @@ abstract class BaseChatRepository {
       required File file,
       required MessageEnum messageType,
       required BuildContext context});
+  Future<Either<Failure, void>> sendGifMessage({
+    required UserModel senderUser,
+    required String recieverId,
+    required String text,
+  });
 }
 
 class ChatRepository extends BaseChatRepository {
@@ -77,6 +82,20 @@ class ChatRepository extends BaseChatRepository {
           file: file,
           messageType: messageType,
           context: context);
+      return right(null);
+    } on FireBaseException catch (e) {
+      return left(FirebaseFailure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> sendGifMessage(
+      {required UserModel senderUser,
+      required String recieverId,
+      required String text}) async {
+    try {
+      await baseChatRemoteDataSource.sendGifMessage(
+          senderUser: senderUser, recieverId: recieverId, text: text);
       return right(null);
     } on FireBaseException catch (e) {
       return left(FirebaseFailure(e.message));

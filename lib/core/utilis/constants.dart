@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
+import 'package:giphy_get/giphy_get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:whatsapp_clone/features/auth/presentation/screens/login_screen.dart';
 import 'package:whatsapp_clone/features/auth/presentation/screens/otb_screen.dart';
@@ -119,5 +120,23 @@ class AppConstants {
       AppConstants.showSnackBar(e.toString(), context, Colors.red);
     }
     return video;
+  }
+
+  static gifPicker(context) async {
+    GiphyGif? gif;
+    try {
+      gif = await GiphyGet.getGif(
+        context: context, //Required
+        apiKey: 'Ihbvqck51mmBulmHUYmJbQgitgBEUFUC', //Required.
+        lang: GiphyLanguage.english, //Optional - Language for query.
+        randomID: "abcd", // Optional - An ID/proxy for a specific user.
+        tabColor: AppConstants.tabColor, // Optional- default accent color.
+        debounceTimeInMilliseconds:
+            350, // Optional- time to pause between search keystrokes
+      );
+    } catch (e) {
+      AppConstants.showSnackBar(e.toString(), context, Colors.red);
+    }
+    return gif;
   }
 }

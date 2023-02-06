@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:giphy_get/giphy_get.dart';
 import 'package:video_player/video_player.dart';
 import 'package:whatsapp_clone/core/common/enums/messgae_enum.dart';
 import 'package:whatsapp_clone/core/utilis/constants.dart';
@@ -37,7 +38,8 @@ class MyMessageCard extends StatelessWidget {
             children: [
               Padding(
                 padding: messageEnum == MessageEnum.image ||
-                        messageEnum == MessageEnum.video
+                        messageEnum == MessageEnum.video ||
+                        messageEnum == MessageEnum.gif
                     ? EdgeInsets.only(
                         left: 10.w,
                         right: 10.w,
@@ -56,12 +58,14 @@ class MyMessageCard extends StatelessWidget {
                         ? VideosPlayer(
                             message: message,
                           )
-                        : Text(
-                            message,
-                            style: TextStyle(
-                              fontSize: 16.sp,
-                            ),
-                          ),
+                        : messageEnum == MessageEnum.gif
+                            ? CachedNetworkImage(imageUrl: message)
+                            : Text(
+                                message,
+                                style: TextStyle(
+                                  fontSize: 16.sp,
+                                ),
+                              ),
               ),
               Positioned(
                 bottom: 4.h,

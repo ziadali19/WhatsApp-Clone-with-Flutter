@@ -34,8 +34,9 @@ class SenderMessageCard extends StatelessWidget {
           child: Stack(
             children: [
               Padding(
-                padding: messageEnum == MessageEnum.image &&
-                        messageEnum == MessageEnum.video
+                padding: messageEnum == MessageEnum.image ||
+                        messageEnum == MessageEnum.video ||
+                        messageEnum == MessageEnum.gif
                     ? EdgeInsets.only(
                         left: 10.w,
                         right: 10.w,
@@ -54,12 +55,14 @@ class SenderMessageCard extends StatelessWidget {
                         ? VideosPlayer(
                             message: message,
                           )
-                        : Text(
-                            message,
-                            style: TextStyle(
-                              fontSize: 16.sp,
-                            ),
-                          ),
+                        : messageEnum == MessageEnum.gif
+                            ? CachedNetworkImage(imageUrl: message)
+                            : Text(
+                                message,
+                                style: TextStyle(
+                                  fontSize: 16.sp,
+                                ),
+                              ),
               ),
               Positioned(
                 bottom: 2.h,

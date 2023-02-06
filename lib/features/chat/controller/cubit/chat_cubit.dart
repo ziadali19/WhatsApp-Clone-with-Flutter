@@ -48,6 +48,21 @@ class ChatCubit extends Cubit<ChatState> {
     }, (r) {});
   }
 
+  sendGifMessage({
+    required UserModel senderUser,
+    required String recieverId,
+    required String text,
+  }) async {
+    int lastIndexOfDashIncrement = text.lastIndexOf('-') + 1;
+    String lastPart = text.substring(lastIndexOfDashIncrement);
+    String newUrl = 'https://i.giphy.com/media/$lastPart/200.gif';
+    Either<Failure, void> result = await baseChatRepository.sendGifMessage(
+        senderUser: senderUser, recieverId: recieverId, text: newUrl);
+    result.fold((l) {
+      emit(SendMessageError(l.message));
+    }, (r) {});
+  }
+
   UserModel? userModel;
   getUserData() async {
     emit(GetUserDataLoading());

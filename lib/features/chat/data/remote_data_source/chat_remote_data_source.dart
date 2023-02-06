@@ -29,6 +29,12 @@ abstract class BaseChatRemoteDataSource {
       required BuildContext context});
   Stream<List<MessageModel>> getMessages(String recieverId);
   Future<void> userStatus(bool isOnline);
+
+  Future<void> sendGifMessage({
+    required UserModel senderUser,
+    required String recieverId,
+    required String text,
+  });
 }
 
 class ChatRemoteDataSource extends BaseChatRemoteDataSource {
@@ -234,6 +240,36 @@ class ChatRemoteDataSource extends BaseChatRemoteDataSource {
           userName: senderUser.name!,
           recieverUserNam: receiverUser.name!,
           messageType: messageType);
+    } on FirebaseException catch (e) {
+      throw FireBaseException(e.code);
+    }
+  }
+
+  @override
+  Future<void> sendGifMessage({
+    required UserModel senderUser,
+    required String recieverId,
+    required String text,
+  }) async {
+    try {
+      DateTime time = DateTime.now();
+      UserModel recieverUser = UserModel.fromJson(
+          await firebaseFirestore.collection('users').doc(recieverId).get());
+      String messageId = const Uuid().v1();
+      _saveDataToContactsSubCollections(
+          senderUser: senderUser,
+          recieverUser: recieverUser,
+          text: '📷 GIF',
+          time: time,
+          recieverId: recieverId);
+      _saveMessageToMessageSubCollections(
+          recieverUserId: recieverId,
+          text: text,
+          timeSent: time,
+          messageId: messageId,
+          userName: senderUser.name!,
+          recieverUserNam: recieverUser.name!,
+          messageType: MessageEnum.gif);
     } on FirebaseException catch (e) {
       throw FireBaseException(e.code);
     }

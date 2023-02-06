@@ -6,6 +6,7 @@ import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:giphy_get/giphy_get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:whatsapp_clone/core/common/enums/messgae_enum.dart';
 import 'package:whatsapp_clone/features/auth/data/model/user_model.dart';
@@ -48,8 +49,13 @@ class _BottomChatTextFieldState extends State<BottomChatTextField> {
 
   File? imagePicked;
   File? videoPicked;
+  GiphyGif? gifPicked;
   imagePicker() async {
     imagePicked = await AppConstants.imagePicker(context);
+  }
+
+  gifPicker() async {
+    gifPicked = await AppConstants.gifPicker(context);
   }
 
   videoPicker() async {
@@ -125,7 +131,17 @@ class _BottomChatTextFieldState extends State<BottomChatTextField> {
                                 SizedBox(
                                   width: 20.w,
                                 ),
-                                GestureDetector(
+                                InkWell(
+                                  onTap: () async {
+                                    await gifPicker();
+                                    if (gifPicked != null) {
+                                      ChatCubit.get(context).sendGifMessage(
+                                          senderUser:
+                                              ChatCubit.get(context).userModel!,
+                                          recieverId: widget.recieverId,
+                                          text: gifPicked!.url!);
+                                    }
+                                  },
                                   child: const Icon(
                                     Icons.gif,
                                     color: Colors.grey,
