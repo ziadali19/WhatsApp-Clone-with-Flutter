@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bloc/bloc.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +11,7 @@ import 'package:whatsapp_clone/features/auth/data/repository/auth_repository.dar
 import 'package:whatsapp_clone/features/chat/data/model/message_model.dart';
 import 'package:whatsapp_clone/features/chat/data/repository/chat_repository.dart';
 
+import '../../../../core/common/enums/messgae_enum.dart';
 import '../../../auth/data/model/user_model.dart';
 
 part 'chat_state.dart';
@@ -38,14 +41,11 @@ class ChatCubit extends Cubit<ChatState> {
     required String recieverId,
     required String text,
   }) async {
-    emit(SendMessageLoading());
     Either<Failure, void> result = await baseChatRepository.sendTextMessage(
         senderUser: senderUser, recieverId: recieverId, text: text);
     result.fold((l) {
       emit(SendMessageError(l.message));
-    }, (r) {
-      emit(SendMessageSuccess());
-    });
+    }, (r) {});
   }
 
   UserModel? userModel;
@@ -71,5 +71,25 @@ class ChatCubit extends Cubit<ChatState> {
       messages = r;
     });
     return messages;
+  }
+
+  sendFileMessage(
+      {required UserModel senderUser,
+      required String receiverId,
+      required File file,
+      required MessageEnum messageType,
+      required BuildContext context}) async {
+    emit(SendFileLoading());
+    Either<Failure, void> result = await baseChatRepository.sendFileMessage(
+        senderUser: senderUser,
+        receiverId: receiverId,
+        file: file,
+        messageType: messageType,
+        context: context);
+    result.fold((l) {
+      emit(SendMessageError(l.message));
+    }, (r) {
+      emit(SendFileSuccess());
+    });
   }
 }

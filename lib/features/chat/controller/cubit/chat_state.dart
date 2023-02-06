@@ -24,3 +24,13 @@ class GetUserDataError extends ChatState {
 
   GetUserDataError(this.message);
 }
+
+class SendFileLoading extends ChatState {}
+
+class SendFileSuccess extends ChatState {}
+
+class SendFileError extends ChatState {
+  final String? message;
+
+  SendFileError(this.message);
+}

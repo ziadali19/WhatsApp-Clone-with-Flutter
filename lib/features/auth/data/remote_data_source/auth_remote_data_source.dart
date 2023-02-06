@@ -3,9 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:whatsapp_clone/core/common/firebase_storage/firebase_storage_repository.dart';
 import 'package:whatsapp_clone/core/utilis/constants.dart';
-import 'package:whatsapp_clone/features/auth/presentation/screens/otb_screen.dart';
 
 import '../../../../core/network/network_exception.dart';
 import '../model/user_model.dart';
@@ -51,7 +49,7 @@ class AuthRemoteDataSource extends BaseAuthRemoteDataSource {
     try {
       DocumentSnapshot<Map<String, dynamic>> response = await firebaseFirestore
           .collection('users')
-          .doc(firebaseAuth.currentUser!.uid)
+          .doc(AppConstants.uID)
           .get();
 
       return UserModel.fromJson(response.data());

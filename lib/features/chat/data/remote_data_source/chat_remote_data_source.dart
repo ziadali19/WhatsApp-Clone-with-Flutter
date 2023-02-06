@@ -1,7 +1,13 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import 'package:whatsapp_clone/core/common/enums/messgae_enum.dart';
+import 'package:whatsapp_clone/core/common/firebase_storage/firebase_storage_repository.dart';
+import 'package:whatsapp_clone/core/network/failure.dart';
 import 'package:whatsapp_clone/core/network/network_exception.dart';
 import 'package:whatsapp_clone/features/auth/data/model/user_model.dart';
 import 'package:whatsapp_clone/features/chat/data/model/chat_contact_model.dart';
@@ -15,6 +21,12 @@ abstract class BaseChatRemoteDataSource {
     required String recieverId,
     required String text,
   });
+  Future<void> sendFileMessage(
+      {required UserModel senderUser,
+      required String receiverId,
+      required File file,
+      required MessageEnum messageType,
+      required BuildContext context});
   Stream<List<MessageModel>> getMessages(String recieverId);
   Future<void> userStatus(bool isOnline);
 }
@@ -22,8 +34,9 @@ abstract class BaseChatRemoteDataSource {
 class ChatRemoteDataSource extends BaseChatRemoteDataSource {
   final FirebaseFirestore firebaseFirestore;
   final FirebaseAuth firebaseAuth;
-
-  ChatRemoteDataSource(this.firebaseFirestore, this.firebaseAuth);
+  final BaseFirebaseStorageRepository baseFirebaseStorageRepository;
+  ChatRemoteDataSource(this.firebaseFirestore, this.firebaseAuth,
+      this.baseFirebaseStorageRepository);
 
   _saveDataToContactsSubCollections(
       {required UserModel senderUser,
@@ -163,6 +176,64 @@ class ChatRemoteDataSource extends BaseChatRemoteDataSource {
           .collection('users')
           .doc(AppConstants.uID)
           .update({'isOnline': isOnline});
+    } on FirebaseException catch (e) {
+      throw FireBaseException(e.code);
+    }
+  }
+
+  @override
+  sendFileMessage(
+      {required UserModel senderUser,
+      required String receiverId,
+      required File file,
+      required MessageEnum messageType,
+      required BuildContext context}) async {
+    try {
+      UserModel receiverUser = UserModel.fromJson(
+          await firebaseFirestore.collection('users').doc(receiverId).get());
+      String messageId = const Uuid().v1();
+      String fileUrl = '';
+      Either<Failure, String> result =
+          await baseFirebaseStorageRepository.saveFileToFirebase(
+              'chat/${messageType.type}/${senderUser.uID}/$receiverId/$messageId',
+              file);
+      result.fold((l) {
+        AppConstants.showSnackBar(l.message, context, Colors.red);
+      }, (r) {
+        fileUrl = r;
+      });
+
+      late String contactMsg;
+      switch (messageType) {
+        case MessageEnum.image:
+          contactMsg = '📷 Photo';
+          break;
+        case MessageEnum.video:
+          contactMsg = '📷 Video';
+          break;
+        case MessageEnum.audio:
+          contactMsg = '🎵 Audio';
+          break;
+        case MessageEnum.gif:
+          contactMsg = '📷 GIF';
+          break;
+        default:
+          contactMsg = '';
+      }
+      _saveDataToContactsSubCollections(
+          senderUser: senderUser,
+          recieverUser: receiverUser,
+          text: contactMsg,
+          time: DateTime.now(),
+          recieverId: receiverId);
+      _saveMessageToMessageSubCollections(
+          recieverUserId: receiverId,
+          text: fileUrl,
+          timeSent: DateTime.now(),
+          messageId: messageId,
+          userName: senderUser.name!,
+          recieverUserNam: receiverUser.name!,
+          messageType: messageType);
     } on FirebaseException catch (e) {
       throw FireBaseException(e.code);
     }
