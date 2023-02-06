@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:whatsapp_clone/features/auth/presentation/screens/user_information_screen.dart';
+import 'package:whatsapp_clone/features/chat/data/repository/chat_repository.dart';
 
 import 'package:whatsapp_clone/features/landing/presentation/screens/landing_screen.dart';
 import 'package:whatsapp_clone/features/layout/presentation/screens/layout_screen.dart';
@@ -70,7 +71,9 @@ class MyApp extends StatelessWidget {
             home: AppConstants.uID != null && AppConstants.user == null
                 ? const UserInformationScreen()
                 : AppConstants.uID != null && AppConstants.user != null
-                    ? const LayoutScreen()
+                    ? LayoutScreen(
+                        baseChatRepository: sl<BaseChatRepository>(),
+                      )
                     : const LandingScreen(),
           );
         },

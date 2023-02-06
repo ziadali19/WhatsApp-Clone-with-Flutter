@@ -6,10 +6,12 @@ import 'package:image_picker/image_picker.dart';
 import 'package:whatsapp_clone/features/auth/presentation/screens/login_screen.dart';
 import 'package:whatsapp_clone/features/auth/presentation/screens/otb_screen.dart';
 import 'package:whatsapp_clone/features/auth/presentation/screens/user_information_screen.dart';
+import 'package:whatsapp_clone/features/chat/data/repository/chat_repository.dart';
 import 'package:whatsapp_clone/features/layout/presentation/screens/layout_screen.dart';
 
 import '../../features/chat/presentation/screens/chat_screen.dart';
 import '../../features/select_contacts/presentation/screens/contacts_screen.dart';
+import '../services/service_locator.dart';
 
 class AppConstants {
   static const backgroundColor = Color.fromRGBO(19, 28, 33, 1);
@@ -34,7 +36,9 @@ class AppConstants {
         );
       case LayoutScreen.routeName:
         return MaterialPageRoute(
-          builder: (context) => const LayoutScreen(),
+          builder: (context) => LayoutScreen(
+            baseChatRepository: sl<BaseChatRepository>(),
+          ),
         );
       case UserInformationScreen.routeName:
         return MaterialPageRoute(

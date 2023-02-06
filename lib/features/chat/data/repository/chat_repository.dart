@@ -13,6 +13,7 @@ abstract class BaseChatRepository {
     required String text,
   });
   Either<Failure, Stream<List<MessageModel>>> getMessages(String recieverId);
+  Future<Either<Failure, void>> userStatus(bool isOnline);
 }
 
 class ChatRepository extends BaseChatRepository {
@@ -37,6 +38,16 @@ class ChatRepository extends BaseChatRepository {
   Either<Failure, Stream<List<MessageModel>>> getMessages(String recieverId) {
     try {
       return right(baseChatRemoteDataSource.getMessages(recieverId));
+    } on FireBaseException catch (e) {
+      return left(FirebaseFailure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> userStatus(bool isOnline) async {
+    try {
+      await baseChatRemoteDataSource.userStatus(isOnline);
+      return right(null);
     } on FireBaseException catch (e) {
       return left(FirebaseFailure(e.message));
     }

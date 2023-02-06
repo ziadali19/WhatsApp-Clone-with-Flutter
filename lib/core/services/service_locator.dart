@@ -54,9 +54,7 @@ class ServicesLocator {
         ChatRemoteDataSource(
             FirebaseFirestore.instance, FirebaseAuth.instance));
 
-    sl.registerFactory(() => LayoutCubit(
-          sl(),
-        ));
+    sl.registerFactory(() => LayoutCubit(sl(), sl()));
     sl.registerLazySingleton<BaseLayoutRepository>(
         () => LayoutRepository(sl()));
     sl.registerLazySingleton<BaseLayoutRemoteDataSource>(

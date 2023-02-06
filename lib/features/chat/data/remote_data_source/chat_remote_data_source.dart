@@ -16,6 +16,7 @@ abstract class BaseChatRemoteDataSource {
     required String text,
   });
   Stream<List<MessageModel>> getMessages(String recieverId);
+  Future<void> userStatus(bool isOnline);
 }
 
 class ChatRemoteDataSource extends BaseChatRemoteDataSource {
@@ -150,6 +151,18 @@ class ChatRemoteDataSource extends BaseChatRemoteDataSource {
         }
         return messages;
       });
+    } on FirebaseException catch (e) {
+      throw FireBaseException(e.code);
+    }
+  }
+
+  @override
+  Future<void> userStatus(bool isOnline) async {
+    try {
+      await firebaseFirestore
+          .collection('users')
+          .doc(AppConstants.uID)
+          .update({'isOnline': isOnline});
     } on FirebaseException catch (e) {
       throw FireBaseException(e.code);
     }
