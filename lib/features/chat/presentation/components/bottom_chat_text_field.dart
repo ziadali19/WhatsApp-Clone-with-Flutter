@@ -6,8 +6,11 @@ import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_sound/flutter_sound.dart';
 import 'package:giphy_get/giphy_get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:whatsapp_clone/core/common/enums/messgae_enum.dart';
 import 'package:whatsapp_clone/features/auth/data/model/user_model.dart';
 import 'package:whatsapp_clone/features/chat/controller/cubit/chat_cubit.dart';
@@ -25,14 +28,40 @@ class BottomChatTextField extends StatefulWidget {
 }
 
 class _BottomChatTextFieldState extends State<BottomChatTextField> {
+  File? imagePicked;
+  File? videoPicked;
+  GiphyGif? gifPicked;
   FocusNode focusNode = FocusNode();
   bool emoji = false;
   bool isThereAText = false;
   TextEditingController messageController = TextEditingController();
+  FlutterSoundRecorder? soundRecorder;
+  bool isRecordInit = false;
+  bool isRecording = false;
+  @override
+  void initState() {
+    super.initState();
+    soundRecorder = FlutterSoundRecorder();
+    openRecoder();
+  }
+
   @override
   void dispose() {
     super.dispose();
     messageController.dispose();
+    soundRecorder!.closeRecorder();
+    isRecordInit = false;
+  }
+
+  openRecoder() async {
+    final status = await Permission.microphone.request();
+    if (status != PermissionStatus.granted) {
+      AppConstants.showSnackBar(
+          'Microphone permission is required', context, Colors.red);
+    } else {
+      await soundRecorder!.openRecorder();
+      isRecordInit = true;
+    }
   }
 
   showEmojis() {
@@ -47,9 +76,6 @@ class _BottomChatTextFieldState extends State<BottomChatTextField> {
     });
   }
 
-  File? imagePicked;
-  File? videoPicked;
-  GiphyGif? gifPicked;
   imagePicker() async {
     imagePicked = await AppConstants.imagePicker(context);
   }
@@ -226,7 +252,7 @@ class _BottomChatTextFieldState extends State<BottomChatTextField> {
                                 minWidth: 100.w, minHeight: 45.h),
                             shape: const CircleBorder(),
                             fillColor: AppConstants.tabColor,
-                            onPressed: () {
+                            onPressed: () async {
                               if (messageController.text.trim().isNotEmpty) {
                                 ChatCubit.get(context).sendTextMessage(
                                     senderUser:
@@ -234,11 +260,37 @@ class _BottomChatTextFieldState extends State<BottomChatTextField> {
                                     recieverId: widget.recieverId,
                                     text: messageController.text.trim());
                                 messageController.text = '';
+                              } else {
+                                if (!isRecordInit) {
+                                  return;
+                                }
+                                Directory tempDirectory =
+                                    await getTemporaryDirectory();
+                                String path =
+                                    '${tempDirectory.path}/flutter_sound.aac';
+                                if (isRecording) {
+                                  await soundRecorder!.stopRecorder();
+                                  ChatCubit.get(context).sendFileMessage(
+                                      senderUser:
+                                          ChatCubit.get(context).userModel!,
+                                      receiverId: widget.recieverId,
+                                      file: File(path),
+                                      messageType: MessageEnum.audio,
+                                      context: context);
+                                } else {
+                                  await soundRecorder!
+                                      .startRecorder(toFile: path);
+                                }
+                                setState(() {
+                                  isRecording = !isRecording;
+                                });
                               }
                             },
                             child: Icon(isThereAText == true
                                 ? Icons.send_rounded
-                                : Icons.mic_rounded),
+                                : isRecording
+                                    ? Icons.stop_rounded
+                                    : Icons.mic_rounded),
                           ),
                         ),
                 ],

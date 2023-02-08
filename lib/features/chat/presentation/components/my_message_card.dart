@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:flutter/material.dart';
@@ -21,6 +22,8 @@ class MyMessageCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isPlaying = false;
+    AudioPlayer audioPlayer = AudioPlayer();
     return Align(
       alignment: Alignment.centerRight,
       child: ConstrainedBox(
@@ -46,12 +49,19 @@ class MyMessageCard extends StatelessWidget {
                         top: 10.h,
                         bottom: 25.h,
                       )
-                    : EdgeInsets.only(
-                        left: 10.w,
-                        right: 30.w,
-                        top: 5.h,
-                        bottom: 20.h,
-                      ),
+                    : messageEnum == MessageEnum.audio
+                        ? EdgeInsets.only(
+                            left: 10.w,
+                            right: 10.w,
+                            top: 10.h,
+                            bottom: 30.h,
+                          )
+                        : EdgeInsets.only(
+                            left: 10.w,
+                            right: 30.w,
+                            top: 5.h,
+                            bottom: 20.h,
+                          ),
                 child: messageEnum == MessageEnum.image
                     ? CachedNetworkImage(imageUrl: message)
                     : messageEnum == MessageEnum.video
@@ -60,12 +70,46 @@ class MyMessageCard extends StatelessWidget {
                           )
                         : messageEnum == MessageEnum.gif
                             ? CachedNetworkImage(imageUrl: message)
-                            : Text(
-                                message,
-                                style: TextStyle(
-                                  fontSize: 16.sp,
-                                ),
-                              ),
+                            : messageEnum == MessageEnum.audio
+                                ? StatefulBuilder(
+                                    builder: (BuildContext context,
+                                        void Function(void Function())
+                                            setState) {
+                                      return IconButton(
+                                          constraints:
+                                              BoxConstraints(minWidth: 100.w),
+                                          onPressed: () async {
+                                            if (isPlaying) {
+                                              await audioPlayer.pause();
+                                              setState(
+                                                () {
+                                                  isPlaying = false;
+                                                },
+                                              );
+                                            } else {
+                                              await audioPlayer
+                                                  .play(UrlSource(message));
+                                              setState(
+                                                () {
+                                                  isPlaying = true;
+                                                },
+                                              );
+                                            }
+                                          },
+                                          icon: Icon(
+                                            isPlaying
+                                                ? Icons.pause_circle_rounded
+                                                : Icons.play_circle_rounded,
+                                            size: 35.sp,
+                                          ));
+                                    },
+                                  )
+                                : Text(
+                                    message,
+                                    style: TextStyle(
+                                      fontSize: 16.sp,
+                                    ),
+                                  ),
               ),
               Positioned(
                 bottom: 4.h,
