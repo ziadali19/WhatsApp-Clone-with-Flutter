@@ -1,140 +1,177 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:swipe_to/swipe_to.dart';
 import 'package:whatsapp_clone/core/common/enums/messgae_enum.dart';
 import 'package:whatsapp_clone/core/utilis/constants.dart';
+import 'package:whatsapp_clone/features/chat/controller/cubit/chat_cubit.dart';
+import 'package:whatsapp_clone/features/chat/presentation/components/display_all_types_of_messages.dart';
 import 'package:whatsapp_clone/features/chat/presentation/components/video_player.dart';
 
 class SenderMessageCard extends StatelessWidget {
-  const SenderMessageCard({
-    Key? key,
-    required this.message,
-    required this.date,
-    required this.messageEnum,
-  }) : super(key: key);
+  SenderMessageCard(
+      {Key? key,
+      required this.message,
+      required this.date,
+      required this.messageEnum,
+      required this.replyOnMessageType,
+      required this.replyOnUserName,
+      required this.replyOn})
+      : super(key: key);
+  String replyOn;
+  final MessageEnum replyOnMessageType;
+  final String replyOnUserName;
   final String message;
   final String date;
   final MessageEnum messageEnum;
 
   @override
   Widget build(BuildContext context) {
-    bool isPlaying = false;
-    AudioPlayer audioPlayer = AudioPlayer();
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          minWidth: 150.w,
-          maxWidth: MediaQuery.of(context).size.width - 45,
-        ),
-        child: Card(
-          elevation: 1,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
-          color: AppConstants.senderMessageColor,
-          margin: EdgeInsets.symmetric(horizontal: 15.w, vertical: 5.h),
-          child: Stack(
-            children: [
-              Padding(
-                padding: messageEnum == MessageEnum.image ||
-                        messageEnum == MessageEnum.video ||
-                        messageEnum == MessageEnum.gif
-                    ? EdgeInsets.only(
-                        left: 10.w,
-                        right: 10.w,
-                        top: 10.h,
-                        bottom: 25.h,
-                      )
-                    : messageEnum == MessageEnum.audio
-                        ? EdgeInsets.only(
-                            left: 10.w,
-                            right: 10.w,
-                            top: 10.h,
-                            bottom: 30.h,
-                          )
-                        : EdgeInsets.only(
-                            left: 10.w,
-                            right: 30.w,
-                            top: 5.h,
-                            bottom: 20.h,
-                          ),
-                child: messageEnum == MessageEnum.image
-                    ? CachedNetworkImage(imageUrl: message)
-                    : messageEnum == MessageEnum.video
-                        ? VideosPlayer(
-                            message: message,
-                          )
-                        : messageEnum == MessageEnum.gif
-                            ? CachedNetworkImage(imageUrl: message)
-                            : messageEnum == MessageEnum.audio
-                                ? StatefulBuilder(
-                                    builder: (BuildContext context,
-                                        void Function(void Function())
-                                            setState) {
-                                      return IconButton(
-                                          constraints:
-                                              BoxConstraints(minWidth: 100.w),
-                                          onPressed: () async {
-                                            if (isPlaying) {
-                                              await audioPlayer.pause();
-                                              setState(
-                                                () {
-                                                  isPlaying = false;
-                                                },
-                                              );
-                                            } else {
-                                              await audioPlayer
-                                                  .play(UrlSource(message));
-                                              setState(
-                                                () {
-                                                  isPlaying = true;
-                                                },
-                                              );
-                                            }
-                                          },
-                                          icon: Icon(
-                                            isPlaying
-                                                ? Icons.pause_circle_rounded
-                                                : Icons.play_circle_rounded,
-                                            size: 35.sp,
-                                          ));
-                                    },
-                                  )
-                                : Text(
-                                    message,
-                                    style: TextStyle(
-                                      fontSize: 16.sp,
-                                    ),
-                                  ),
+    return BlocBuilder<ChatCubit, ChatState>(
+      builder: (context, state) {
+        switch (replyOnMessageType) {
+          case MessageEnum.image:
+            replyOn = '📷 Photo';
+            break;
+          case MessageEnum.video:
+            replyOn = '📷 Video';
+            break;
+          case MessageEnum.audio:
+            replyOn = '🎵 Audio';
+            break;
+          case MessageEnum.gif:
+            replyOn = '📷 GIF';
+            break;
+          case MessageEnum.text:
+            replyOn = replyOn;
+            break;
+          default:
+            replyOn = '';
+        }
+        return SwipeTo(
+          onRightSwipe: () {
+            ChatCubit.get(context).swipeToReply(message, messageEnum, false);
+          },
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minWidth: 150.w,
+                maxWidth: MediaQuery.of(context).size.width - 45,
               ),
-              Positioned(
-                bottom: 4.h,
-                right: 10.w,
-                child: Row(
+              child: Container(
+                padding: EdgeInsets.all(2.h),
+                margin: EdgeInsets.all(5.h),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8.r),
+                  color: AppConstants.senderMessageColor,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      date,
-                      style: TextStyle(
-                        fontSize: 13.sp,
-                        color: Colors.white60,
+                    replyOn.isNotEmpty
+                        ? Container(
+                            padding: EdgeInsets.all(8.h),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8.r),
+                              color: AppConstants.messageColor,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  replyOnUserName,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: AppConstants.tabColor),
+                                ),
+                                SizedBox(
+                                  height: 5.h,
+                                ),
+                                Text(
+                                  replyOn,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 2,
+                                  style: TextStyle(
+                                      color: Colors.grey[500], fontSize: 15.sp),
+                                )
+                              ],
+                            ),
+                          )
+                        : const SizedBox(),
+                    Container(
+                      constraints: BoxConstraints(
+                        minWidth: 150.w,
+                        maxWidth: MediaQuery.of(context).size.width - 45.w,
                       ),
-                    ),
-                    SizedBox(
-                      width: 5.w,
-                    ),
-                    Icon(
-                      Icons.done_all,
-                      size: 20.sp,
-                      color: Colors.grey[400],
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.r),
+                        color: AppConstants.senderMessageColor,
+                      ),
+                      margin: EdgeInsets.symmetric(vertical: 5.h),
+                      child: Stack(
+                        children: [
+                          Padding(
+                            padding: messageEnum == MessageEnum.image ||
+                                    messageEnum == MessageEnum.video ||
+                                    messageEnum == MessageEnum.gif
+                                ? EdgeInsets.only(
+                                    left: 8.w,
+                                    right: 8.w,
+                                    top: 8.h,
+                                    bottom: 23.h,
+                                  )
+                                : messageEnum == MessageEnum.audio
+                                    ? EdgeInsets.only(
+                                        left: 8.w,
+                                        right: 8.w,
+                                        top: 8.h,
+                                        bottom: 28.h,
+                                      )
+                                    : EdgeInsets.only(
+                                        left: 8.w,
+                                        right: 28.w,
+                                        top: 3.h,
+                                        bottom: 25.h,
+                                      ),
+                            child:
+                                displayAllTypesOfMEssages(message, messageEnum),
+                          ),
+                          Positioned(
+                            bottom: 2.h,
+                            right: 8.w,
+                            child: Row(
+                              children: [
+                                Text(
+                                  date,
+                                  style: TextStyle(
+                                    fontSize: 13.sp,
+                                    color: Colors.white60,
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 5.w,
+                                ),
+                                Icon(
+                                  Icons.done_all,
+                                  size: 20.sp,
+                                  color: Colors.grey[400],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
               ),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

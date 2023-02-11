@@ -24,18 +24,18 @@ class ChatScreen extends StatelessWidget {
   static const routeName = '/chat-screen';
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<ChatCubit, ChatState>(
-      listener: (context, state) {
-        if (state is GetUserDataError) {
-          AppConstants.showSnackBar(state.message, context, Colors.red);
-        }
-      },
-      builder: (context, state) {
-        ChatCubit cubit = ChatCubit.get(context);
-        return Scaffold(
-          appBar: AppBar(
-            backgroundColor: AppConstants.appBarColor,
-            title: Column(
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: AppConstants.appBarColor,
+        title: BlocConsumer<ChatCubit, ChatState>(
+          listener: (context, state) {
+            if (state is GetUserDataError) {
+              AppConstants.showSnackBar(state.message, context, Colors.red);
+            }
+          },
+          builder: (context, state) {
+            ChatCubit cubit = ChatCubit.get(context);
+            return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(name!,
@@ -64,37 +64,38 @@ class ChatScreen extends StatelessWidget {
                       }
                     })
               ],
+            );
+          },
+        ),
+        centerTitle: false,
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.video_call),
+          ),
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.call),
+          ),
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.more_vert),
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: ChatList(
+              recieverId: uID!,
             ),
-            centerTitle: false,
-            actions: [
-              IconButton(
-                onPressed: () {},
-                icon: const Icon(Icons.video_call),
-              ),
-              IconButton(
-                onPressed: () {},
-                icon: const Icon(Icons.call),
-              ),
-              IconButton(
-                onPressed: () {},
-                icon: const Icon(Icons.more_vert),
-              ),
-            ],
           ),
-          body: Column(
-            children: [
-              Expanded(
-                child: ChatList(
-                  recieverId: uID!,
-                ),
-              ),
-              BottomChatTextField(
-                recieverId: uID!,
-              )
-            ],
-          ),
-        );
-      },
+          BottomChatTextField(
+            recieverId: uID!,
+            receiverName: name!,
+          )
+        ],
+      ),
     );
   }
 }

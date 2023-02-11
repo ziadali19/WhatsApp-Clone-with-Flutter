@@ -16,25 +16,32 @@ import 'package:whatsapp_clone/features/chat/data/model/message_model.dart';
 import '../../../../core/utilis/constants.dart';
 
 abstract class BaseChatRemoteDataSource {
-  Future<void> sendTextMessage({
-    required UserModel senderUser,
-    required String recieverId,
-    required String text,
-  });
+  Future<void> userStatus(bool isOnline);
+  Future<void> sendTextMessage(
+      {required UserModel senderUser,
+      required String recieverId,
+      required String text,
+      required MessageEnum replyOnMessageType,
+      required String replyOn,
+      required String replyOnUserName});
   Future<void> sendFileMessage(
       {required UserModel senderUser,
       required String receiverId,
       required File file,
       required MessageEnum messageType,
-      required BuildContext context});
-  Stream<List<MessageModel>> getMessages(String recieverId);
-  Future<void> userStatus(bool isOnline);
+      required BuildContext context,
+      required MessageEnum replyOnMessageType,
+      required String replyOn,
+      required String replyOnUserName});
 
-  Future<void> sendGifMessage({
-    required UserModel senderUser,
-    required String recieverId,
-    required String text,
-  });
+  Future<void> sendGifMessage(
+      {required UserModel senderUser,
+      required String recieverId,
+      required String text,
+      required MessageEnum replyOnMessageType,
+      required String replyOn,
+      required String replyOnUserName});
+  Stream<List<MessageModel>> getMessages(String recieverId);
 }
 
 class ChatRemoteDataSource extends BaseChatRemoteDataSource {
@@ -89,7 +96,10 @@ class ChatRemoteDataSource extends BaseChatRemoteDataSource {
       required String messageId,
       required String userName,
       required String recieverUserNam,
-      required MessageEnum messageType}) async {
+      required MessageEnum messageType,
+      required MessageEnum replyOnMessageType,
+      required String replyOn,
+      required String replyOnUserName}) async {
     MessageModel messageModel = MessageModel(
         senderId: AppConstants.uID!,
         recieverId: recieverUserId,
@@ -97,7 +107,10 @@ class ChatRemoteDataSource extends BaseChatRemoteDataSource {
         messageType: messageType,
         messageId: messageId,
         isSeen: false,
-        timeSent: timeSent);
+        timeSent: timeSent,
+        replyOn: replyOn,
+        replyOnMessageType: replyOnMessageType,
+        replyOnUserName: replyOnUserName);
 
     try {
       await firebaseFirestore
@@ -122,11 +135,13 @@ class ChatRemoteDataSource extends BaseChatRemoteDataSource {
   }
 
   @override
-  Future<void> sendTextMessage({
-    required UserModel senderUser,
-    required String recieverId,
-    required String text,
-  }) async {
+  Future<void> sendTextMessage(
+      {required UserModel senderUser,
+      required String recieverId,
+      required String text,
+      required MessageEnum replyOnMessageType,
+      required String replyOn,
+      required String replyOnUserName}) async {
     try {
       DateTime time = DateTime.now();
       UserModel recieverUser = UserModel.fromJson(
@@ -139,6 +154,9 @@ class ChatRemoteDataSource extends BaseChatRemoteDataSource {
           time: time,
           recieverId: recieverId);
       _saveMessageToMessageSubCollections(
+          replyOn: replyOn,
+          replyOnMessageType: replyOnMessageType,
+          replyOnUserName: replyOnUserName,
           recieverUserId: recieverId,
           text: text,
           timeSent: time,
@@ -193,7 +211,10 @@ class ChatRemoteDataSource extends BaseChatRemoteDataSource {
       required String receiverId,
       required File file,
       required MessageEnum messageType,
-      required BuildContext context}) async {
+      required BuildContext context,
+      required MessageEnum replyOnMessageType,
+      required String replyOn,
+      required String replyOnUserName}) async {
     try {
       UserModel receiverUser = UserModel.fromJson(
           await firebaseFirestore.collection('users').doc(receiverId).get());
@@ -239,18 +260,23 @@ class ChatRemoteDataSource extends BaseChatRemoteDataSource {
           messageId: messageId,
           userName: senderUser.name!,
           recieverUserNam: receiverUser.name!,
-          messageType: messageType);
+          messageType: messageType,
+          replyOn: replyOn,
+          replyOnMessageType: replyOnMessageType,
+          replyOnUserName: replyOnUserName);
     } on FirebaseException catch (e) {
       throw FireBaseException(e.code);
     }
   }
 
   @override
-  Future<void> sendGifMessage({
-    required UserModel senderUser,
-    required String recieverId,
-    required String text,
-  }) async {
+  Future<void> sendGifMessage(
+      {required UserModel senderUser,
+      required String recieverId,
+      required String text,
+      required MessageEnum replyOnMessageType,
+      required String replyOn,
+      required String replyOnUserName}) async {
     try {
       DateTime time = DateTime.now();
       UserModel recieverUser = UserModel.fromJson(
@@ -269,7 +295,10 @@ class ChatRemoteDataSource extends BaseChatRemoteDataSource {
           messageId: messageId,
           userName: senderUser.name!,
           recieverUserNam: recieverUser.name!,
-          messageType: MessageEnum.gif);
+          messageType: MessageEnum.gif,
+          replyOn: replyOn,
+          replyOnMessageType: replyOnMessageType,
+          replyOnUserName: replyOnUserName);
     } on FirebaseException catch (e) {
       throw FireBaseException(e.code);
     }

@@ -36,28 +36,42 @@ class ChatCubit extends Cubit<ChatState> {
     return userModel;
   }
 
-  sendTextMessage({
-    required UserModel senderUser,
-    required String recieverId,
-    required String text,
-  }) async {
+  sendTextMessage(
+      {required UserModel senderUser,
+      required String recieverId,
+      required String text,
+      required MessageEnum replyOnMessageType,
+      required String replyOn,
+      required String replyOnUserName}) async {
     Either<Failure, void> result = await baseChatRepository.sendTextMessage(
-        senderUser: senderUser, recieverId: recieverId, text: text);
+        senderUser: senderUser,
+        recieverId: recieverId,
+        text: text,
+        replyOn: replyOn,
+        replyOnMessageType: replyOnMessageType,
+        replyOnUserName: replyOnUserName);
     result.fold((l) {
       emit(SendMessageError(l.message));
     }, (r) {});
   }
 
-  sendGifMessage({
-    required UserModel senderUser,
-    required String recieverId,
-    required String text,
-  }) async {
+  sendGifMessage(
+      {required UserModel senderUser,
+      required String recieverId,
+      required String text,
+      required MessageEnum replyOnMessageType,
+      required String replyOn,
+      required String replyOnUserName}) async {
     int lastIndexOfDashIncrement = text.lastIndexOf('-') + 1;
     String lastPart = text.substring(lastIndexOfDashIncrement);
     String newUrl = 'https://i.giphy.com/media/$lastPart/200.gif';
     Either<Failure, void> result = await baseChatRepository.sendGifMessage(
-        senderUser: senderUser, recieverId: recieverId, text: newUrl);
+        senderUser: senderUser,
+        recieverId: recieverId,
+        text: newUrl,
+        replyOn: replyOn,
+        replyOnMessageType: replyOnMessageType,
+        replyOnUserName: replyOnUserName);
     result.fold((l) {
       emit(SendMessageError(l.message));
     }, (r) {});
@@ -93,18 +107,41 @@ class ChatCubit extends Cubit<ChatState> {
       required String receiverId,
       required File file,
       required MessageEnum messageType,
-      required BuildContext context}) async {
+      required BuildContext context,
+      required MessageEnum replyOnMessageType,
+      required String replyOn,
+      required String replyOnUserName}) async {
     emit(SendFileLoading());
     Either<Failure, void> result = await baseChatRepository.sendFileMessage(
         senderUser: senderUser,
         receiverId: receiverId,
         file: file,
         messageType: messageType,
-        context: context);
+        context: context,
+        replyOn: replyOn,
+        replyOnMessageType: replyOnMessageType,
+        replyOnUserName: replyOnUserName);
     result.fold((l) {
       emit(SendMessageError(l.message));
     }, (r) {
       emit(SendFileSuccess());
     });
+  }
+
+  cancelReply() {
+    message = null;
+    messageType = null;
+    isMe = null;
+    emit(CancelReply());
+  }
+
+  String? message;
+  MessageEnum? messageType;
+  bool? isMe;
+  swipeToReply(String message, MessageEnum messageType, bool isMe) {
+    this.message = message;
+    this.messageType = messageType;
+    this.isMe = isMe;
+    emit(MessageReplyContainer());
   }
 }

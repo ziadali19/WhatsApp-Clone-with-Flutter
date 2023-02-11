@@ -11,11 +11,13 @@ import '../../../auth/data/model/user_model.dart';
 import '../model/message_model.dart';
 
 abstract class BaseChatRepository {
-  Future<Either<Failure, void>> sendTextMessage({
-    required UserModel senderUser,
-    required String recieverId,
-    required String text,
-  });
+  Future<Either<Failure, void>> sendTextMessage(
+      {required UserModel senderUser,
+      required String recieverId,
+      required String text,
+      required MessageEnum replyOnMessageType,
+      required String replyOn,
+      required String replyOnUserName});
   Either<Failure, Stream<List<MessageModel>>> getMessages(String recieverId);
   Future<Either<Failure, void>> userStatus(bool isOnline);
   Future<Either<Failure, void>> sendFileMessage(
@@ -23,11 +25,17 @@ abstract class BaseChatRepository {
       required String receiverId,
       required File file,
       required MessageEnum messageType,
-      required BuildContext context});
+      required BuildContext context,
+      required MessageEnum replyOnMessageType,
+      required String replyOn,
+      required String replyOnUserName});
   Future<Either<Failure, void>> sendGifMessage({
     required UserModel senderUser,
     required String recieverId,
     required String text,
+    required MessageEnum replyOnMessageType,
+    required String replyOn,
+    required String replyOnUserName,
   });
 }
 
@@ -39,10 +47,18 @@ class ChatRepository extends BaseChatRepository {
   Future<Either<Failure, void>> sendTextMessage(
       {required UserModel senderUser,
       required String recieverId,
-      required String text}) async {
+      required String text,
+      required MessageEnum replyOnMessageType,
+      required String replyOn,
+      required String replyOnUserName}) async {
     try {
       await baseChatRemoteDataSource.sendTextMessage(
-          senderUser: senderUser, recieverId: recieverId, text: text);
+          senderUser: senderUser,
+          recieverId: recieverId,
+          text: text,
+          replyOn: replyOn,
+          replyOnMessageType: replyOnMessageType,
+          replyOnUserName: replyOnUserName);
       return right(null);
     } on FireBaseException catch (e) {
       return left(FirebaseFailure(e.message));
@@ -74,14 +90,20 @@ class ChatRepository extends BaseChatRepository {
       required String receiverId,
       required File file,
       required MessageEnum messageType,
-      required BuildContext context}) async {
+      required BuildContext context,
+      required MessageEnum replyOnMessageType,
+      required String replyOn,
+      required String replyOnUserName}) async {
     try {
       await baseChatRemoteDataSource.sendFileMessage(
           senderUser: senderUser,
           receiverId: receiverId,
           file: file,
           messageType: messageType,
-          context: context);
+          context: context,
+          replyOn: replyOn,
+          replyOnMessageType: replyOnMessageType,
+          replyOnUserName: replyOnUserName);
       return right(null);
     } on FireBaseException catch (e) {
       return left(FirebaseFailure(e.message));
@@ -92,10 +114,18 @@ class ChatRepository extends BaseChatRepository {
   Future<Either<Failure, void>> sendGifMessage(
       {required UserModel senderUser,
       required String recieverId,
-      required String text}) async {
+      required String text,
+      required MessageEnum replyOnMessageType,
+      required String replyOn,
+      required String replyOnUserName}) async {
     try {
       await baseChatRemoteDataSource.sendGifMessage(
-          senderUser: senderUser, recieverId: recieverId, text: text);
+          senderUser: senderUser,
+          recieverId: recieverId,
+          text: text,
+          replyOn: replyOn,
+          replyOnMessageType: replyOnMessageType,
+          replyOnUserName: replyOnUserName);
       return right(null);
     } on FireBaseException catch (e) {
       return left(FirebaseFailure(e.message));

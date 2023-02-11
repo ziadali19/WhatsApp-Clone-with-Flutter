@@ -9,6 +9,9 @@ class MessageModel {
   final String messageId;
   final bool isSeen;
   final DateTime timeSent;
+  final String replyOn;
+  final String replyOnUserName;
+  final MessageEnum replyOnMessageType;
   MessageModel({
     required this.senderId,
     required this.recieverId,
@@ -17,6 +20,9 @@ class MessageModel {
     required this.messageId,
     required this.isSeen,
     required this.timeSent,
+    required this.replyOn,
+    required this.replyOnUserName,
+    required this.replyOnMessageType,
   });
   factory MessageModel.fromJson(Map<String, dynamic> json) {
     return MessageModel(
@@ -27,6 +33,9 @@ class MessageModel {
       messageId: json['messageId'] as String,
       isSeen: json['isSeen'] as bool,
       timeSent: DateTime.parse(json['timeSent']),
+      replyOn: json['replyOn'] as String,
+      replyOnMessageType: (json['replyOnMessageType'] as String).toEnum(),
+      replyOnUserName: json['replyOnUserName'] as String,
     );
   }
   Map<String, dynamic> toJson() {
@@ -38,6 +47,9 @@ class MessageModel {
       'messageId': messageId,
       'isSeen': isSeen,
       'timeSent': timeSent.toString(),
+      'replyOn': replyOn,
+      'replyOnUserName': replyOnUserName,
+      'replyOnMessageType': replyOnMessageType.type,
     };
   }
 }

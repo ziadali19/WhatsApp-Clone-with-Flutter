@@ -8,12 +8,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:giphy_get/giphy_get.dart';
-import 'package:image_picker/image_picker.dart';
+
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:whatsapp_clone/core/common/enums/messgae_enum.dart';
-import 'package:whatsapp_clone/features/auth/data/model/user_model.dart';
+
 import 'package:whatsapp_clone/features/chat/controller/cubit/chat_cubit.dart';
+
+import 'package:whatsapp_clone/features/chat/presentation/components/message_reply_preview.dart';
 
 import '../../../../core/utilis/constants.dart';
 
@@ -21,8 +23,11 @@ class BottomChatTextField extends StatefulWidget {
   const BottomChatTextField({
     super.key,
     required this.recieverId,
+    required this.receiverName,
   });
   final String recieverId;
+
+  final String receiverName;
   @override
   State<BottomChatTextField> createState() => _BottomChatTextFieldState();
 }
@@ -100,10 +105,15 @@ class _BottomChatTextFieldState extends State<BottomChatTextField> {
         }
       },
       builder: (context, state) {
+        ChatCubit cubit = ChatCubit.get(context);
         return Padding(
           padding: EdgeInsets.only(left: 5.w, bottom: 5.h),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              ChatCubit.get(context).message != null
+                  ? MessageReplyPreview(name: widget.receiverName)
+                  : const SizedBox(),
               Row(
                 children: [
                   SizedBox(
@@ -165,7 +175,16 @@ class _BottomChatTextFieldState extends State<BottomChatTextField> {
                                           senderUser:
                                               ChatCubit.get(context).userModel!,
                                           recieverId: widget.recieverId,
-                                          text: gifPicked!.url!);
+                                          text: gifPicked!.url!,
+                                          replyOn: cubit.message ?? '',
+                                          replyOnMessageType:
+                                              cubit.messageType ??
+                                                  MessageEnum.text,
+                                          replyOnUserName: cubit.isMe == true
+                                              ? cubit.userModel!.name!
+                                              : cubit.isMe == false
+                                                  ? widget.receiverName
+                                                  : '');
                                     }
                                   },
                                   child: const Icon(
@@ -194,7 +213,16 @@ class _BottomChatTextFieldState extends State<BottomChatTextField> {
                                           receiverId: widget.recieverId,
                                           file: imagePicked!,
                                           messageType: MessageEnum.image,
-                                          context: context);
+                                          context: context,
+                                          replyOn: cubit.message ?? '',
+                                          replyOnMessageType:
+                                              cubit.messageType ??
+                                                  MessageEnum.text,
+                                          replyOnUserName: cubit.isMe == true
+                                              ? cubit.userModel!.name!
+                                              : cubit.isMe == false
+                                                  ? widget.receiverName
+                                                  : '');
                                     }
                                   },
                                   child: const Icon(
@@ -215,7 +243,16 @@ class _BottomChatTextFieldState extends State<BottomChatTextField> {
                                           receiverId: widget.recieverId,
                                           file: videoPicked!,
                                           messageType: MessageEnum.video,
-                                          context: context);
+                                          context: context,
+                                          replyOn: cubit.message ?? '',
+                                          replyOnMessageType:
+                                              cubit.messageType ??
+                                                  MessageEnum.text,
+                                          replyOnUserName: cubit.isMe == true
+                                              ? cubit.userModel!.name!
+                                              : cubit.isMe == false
+                                                  ? widget.receiverName
+                                                  : '');
                                     }
                                   },
                                   child: const Icon(
@@ -254,11 +291,22 @@ class _BottomChatTextFieldState extends State<BottomChatTextField> {
                             fillColor: AppConstants.tabColor,
                             onPressed: () async {
                               if (messageController.text.trim().isNotEmpty) {
-                                ChatCubit.get(context).sendTextMessage(
+                                await ChatCubit.get(context).sendTextMessage(
                                     senderUser:
                                         ChatCubit.get(context).userModel!,
                                     recieverId: widget.recieverId,
-                                    text: messageController.text.trim());
+                                    text: messageController.text.trim(),
+                                    replyOn: cubit.message ?? '',
+                                    replyOnMessageType:
+                                        cubit.messageType ?? MessageEnum.text,
+                                    replyOnUserName: cubit.isMe == true
+                                        ? cubit.userModel!.name!
+                                        : cubit.isMe == false
+                                            ? widget.receiverName
+                                            : '');
+                                if (cubit.message != null) {
+                                  cubit.cancelReply();
+                                }
                                 messageController.text = '';
                               } else {
                                 if (!isRecordInit) {
@@ -270,13 +318,24 @@ class _BottomChatTextFieldState extends State<BottomChatTextField> {
                                     '${tempDirectory.path}/flutter_sound.aac';
                                 if (isRecording) {
                                   await soundRecorder!.stopRecorder();
-                                  ChatCubit.get(context).sendFileMessage(
+                                  await ChatCubit.get(context).sendFileMessage(
                                       senderUser:
                                           ChatCubit.get(context).userModel!,
                                       receiverId: widget.recieverId,
                                       file: File(path),
                                       messageType: MessageEnum.audio,
-                                      context: context);
+                                      context: context,
+                                      replyOn: cubit.message ?? '',
+                                      replyOnMessageType:
+                                          cubit.messageType ?? MessageEnum.text,
+                                      replyOnUserName: cubit.isMe == true
+                                          ? cubit.userModel!.name!
+                                          : cubit.isMe == false
+                                              ? widget.receiverName
+                                              : '');
+                                  if (cubit.message != null) {
+                                    cubit.cancelReply();
+                                  }
                                 } else {
                                   await soundRecorder!
                                       .startRecorder(toFile: path);

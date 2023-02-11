@@ -75,6 +75,11 @@ class _ChatListState extends State<ChatList> {
                               message: snapshot.data![index].text.toString(),
                               date: DateFormat('hh:mm aa')
                                   .format(snapshot.data![index].timeSent),
+                              replyOn: snapshot.data![index].replyOn,
+                              replyOnMessageType:
+                                  snapshot.data![index].replyOnMessageType,
+                              replyOnUserName:
+                                  snapshot.data![index].replyOnUserName,
                             );
                           }
                           return SenderMessageCard(
@@ -82,6 +87,11 @@ class _ChatListState extends State<ChatList> {
                             message: snapshot.data![index].text.toString(),
                             date: DateFormat('hh:mm aa')
                                 .format(snapshot.data![index].timeSent),
+                            replyOn: snapshot.data![index].replyOn,
+                            replyOnMessageType:
+                                snapshot.data![index].replyOnMessageType,
+                            replyOnUserName:
+                                snapshot.data![index].replyOnUserName,
                           );
                         },
                       )

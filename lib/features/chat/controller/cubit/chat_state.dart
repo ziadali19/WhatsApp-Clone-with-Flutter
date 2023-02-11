@@ -34,3 +34,7 @@ class SendFileError extends ChatState {
 
   SendFileError(this.message);
 }
+
+class CancelReply extends ChatState {}
+
+class MessageReplyContainer extends ChatState {}
