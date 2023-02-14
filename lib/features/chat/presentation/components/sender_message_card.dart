@@ -73,6 +73,11 @@ class SenderMessageCard extends StatelessWidget {
                   children: [
                     replyOn.isNotEmpty
                         ? Container(
+                            constraints: BoxConstraints(
+                              minWidth: 150.w,
+                              maxWidth:
+                                  MediaQuery.of(context).size.width - 45.w,
+                            ),
                             padding: EdgeInsets.all(8.h),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(8.r),
@@ -150,14 +155,6 @@ class SenderMessageCard extends StatelessWidget {
                                     fontSize: 13.sp,
                                     color: Colors.white60,
                                   ),
-                                ),
-                                SizedBox(
-                                  width: 5.w,
-                                ),
-                                Icon(
-                                  Icons.done_all,
-                                  size: 20.sp,
-                                  color: Colors.grey[400],
                                 ),
                               ],
                             ),

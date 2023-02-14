@@ -21,6 +21,7 @@ import 'features/auth/controller/cubit/user_information_cubit.dart';
 import 'features/chat/controller/cubit/chat_cubit.dart';
 import 'features/layout/controller/cubit/layout_cubit.dart';
 import 'features/select_contacts/controller/cubit/contacts_cubit.dart';
+import 'features/status/controller/cubit/status_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -56,10 +57,10 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => sl<ChatCubit>()..getUserData(),
-        )
-        /*  BlocProvider(
-          create: (context) => sl<ContactsCubit>()..getContacts(),
-        )*/
+        ),
+        BlocProvider(
+          create: (context) => sl<StatusCubit>()..getUserData(context),
+        ),
       ],
       child: ScreenUtilInit(
         designSize: const Size(411.42857142857144, 843.4285714285714),

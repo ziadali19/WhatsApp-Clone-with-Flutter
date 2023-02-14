@@ -9,6 +9,7 @@ import 'package:whatsapp_clone/features/auth/presentation/screens/otb_screen.dar
 import 'package:whatsapp_clone/features/auth/presentation/screens/user_information_screen.dart';
 import 'package:whatsapp_clone/features/chat/data/repository/chat_repository.dart';
 import 'package:whatsapp_clone/features/layout/presentation/screens/layout_screen.dart';
+import 'package:whatsapp_clone/features/status/presentation/screens/confirm_status_screen.dart';
 
 import '../../features/chat/presentation/screens/chat_screen.dart';
 import '../../features/select_contacts/presentation/screens/contacts_screen.dart';
@@ -64,6 +65,13 @@ class AppConstants {
         return MaterialPageRoute(
           builder: (context) => OTBScreen(
             verficationId: verficationId,
+          ),
+        );
+      case ConfirmStatusScreen.routeName:
+        final File pickedStory = settings.arguments as File;
+        return MaterialPageRoute(
+          builder: (context) => ConfirmStatusScreen(
+            pickedStory: pickedStory,
           ),
         );
       default:

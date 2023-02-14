@@ -11,6 +11,8 @@ import '../../../auth/data/model/user_model.dart';
 import '../model/message_model.dart';
 
 abstract class BaseChatRepository {
+  Future<Either<Failure, void>> setMessagesToSeen(
+      String receiverId, String messageId);
   Future<Either<Failure, void>> sendTextMessage(
       {required UserModel senderUser,
       required String recieverId,
@@ -126,6 +128,17 @@ class ChatRepository extends BaseChatRepository {
           replyOn: replyOn,
           replyOnMessageType: replyOnMessageType,
           replyOnUserName: replyOnUserName);
+      return right(null);
+    } on FireBaseException catch (e) {
+      return left(FirebaseFailure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> setMessagesToSeen(
+      String receiverId, String messageId) async {
+    try {
+      await baseChatRemoteDataSource.setMessagesToSeen(receiverId, messageId);
       return right(null);
     } on FireBaseException catch (e) {
       return left(FirebaseFailure(e.message));

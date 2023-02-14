@@ -1,15 +1,11 @@
-import 'package:audioplayers/audioplayers.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:giphy_get/giphy_get.dart';
+
 import 'package:swipe_to/swipe_to.dart';
-import 'package:video_player/video_player.dart';
+
 import 'package:whatsapp_clone/core/common/enums/messgae_enum.dart';
 import 'package:whatsapp_clone/core/utilis/constants.dart';
-import 'package:whatsapp_clone/features/chat/presentation/components/video_player.dart';
 
 import '../../controller/cubit/chat_cubit.dart';
 import 'display_all_types_of_messages.dart';
@@ -21,6 +17,7 @@ class MyMessageCard extends StatelessWidget {
   String replyOn;
   final MessageEnum replyOnMessageType;
   final String replyOnUserName;
+  final bool isSeen;
   MyMessageCard(
       {Key? key,
       required this.message,
@@ -28,7 +25,8 @@ class MyMessageCard extends StatelessWidget {
       required this.messageEnum,
       required this.replyOn,
       required this.replyOnMessageType,
-      required this.replyOnUserName})
+      required this.replyOnUserName,
+      required this.isSeen})
       : super(key: key);
 
   @override
@@ -172,7 +170,9 @@ class MyMessageCard extends StatelessWidget {
                                 Icon(
                                   Icons.done_all,
                                   size: 20.sp,
-                                  color: Colors.grey[400],
+                                  color: isSeen
+                                      ? Colors.blue[600]
+                                      : Colors.grey[400],
                                 ),
                               ],
                             ),

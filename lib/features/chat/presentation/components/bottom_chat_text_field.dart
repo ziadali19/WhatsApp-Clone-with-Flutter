@@ -51,10 +51,10 @@ class _BottomChatTextFieldState extends State<BottomChatTextField> {
   }
 
   @override
-  void dispose() {
+  void dispose() async {
     super.dispose();
     messageController.dispose();
-    soundRecorder!.closeRecorder();
+    await soundRecorder!.closeRecorder();
     isRecordInit = false;
   }
 

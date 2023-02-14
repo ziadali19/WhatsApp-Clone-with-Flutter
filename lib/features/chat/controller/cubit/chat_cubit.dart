@@ -144,4 +144,13 @@ class ChatCubit extends Cubit<ChatState> {
     this.isMe = isMe;
     emit(MessageReplyContainer());
   }
+
+  setMessagesToSeen(
+      String receiverId, String messageId, BuildContext context) async {
+    Either<Failure, void> result =
+        await baseChatRepository.setMessagesToSeen(receiverId, messageId);
+    result.fold((l) {
+      AppConstants.showSnackBar(l.message, context, Colors.red);
+    }, (r) {});
+  }
 }

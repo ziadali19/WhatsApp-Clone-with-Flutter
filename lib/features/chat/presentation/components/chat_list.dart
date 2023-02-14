@@ -68,9 +68,18 @@ class _ChatListState extends State<ChatList> {
                         controller: scrollController,
                         itemCount: snapshot.data!.length,
                         itemBuilder: (context, index) {
+                          if (!snapshot.data![index].isSeen &&
+                              snapshot.data![index].recieverId ==
+                                  AppConstants.uID) {
+                            cubit.setMessagesToSeen(
+                                snapshot.data![index].recieverId,
+                                snapshot.data![index].messageId,
+                                context);
+                          }
                           if (snapshot.data![index].senderId ==
                               AppConstants.uID) {
                             return MyMessageCard(
+                              isSeen: snapshot.data![index].isSeen,
                               messageEnum: snapshot.data![index].messageType,
                               message: snapshot.data![index].text.toString(),
                               date: DateFormat('hh:mm aa')
