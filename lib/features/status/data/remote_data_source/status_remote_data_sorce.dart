@@ -23,6 +23,7 @@ abstract class BaseStatusRemoteDataSource {
     required File storyImage,
     required BuildContext context,
   });
+  Future<Map<String, List<StatusModel>>> getStatus();
 }
 
 class StatusRemoteDataSource extends BaseStatusRemoteDataSource {
@@ -106,6 +107,63 @@ class StatusRemoteDataSource extends BaseStatusRemoteDataSource {
             .set(statusModel.toMap());
       }
     } on FirebaseException catch (e) {
+      throw FireBaseException(e.code);
+    }
+  }
+
+  @override
+  Future<Map<String, List<StatusModel>>> getStatus() async {
+    try {
+      List<StatusModel> contactsStatusList = [];
+      List<StatusModel> myStatusList = [];
+      List<Contact> contacts = [];
+//myStatus
+
+      QuerySnapshot<Map<String, dynamic>> myStatus = await firebaseFirestore
+          .collection('status')
+          .where('uID', isEqualTo: AppConstants.uID)
+          .where('createdAt',
+              isGreaterThan: DateTime.now()
+                  .subtract(const Duration(hours: 24))
+                  .millisecondsSinceEpoch)
+          .get();
+      if (myStatus.docs.isNotEmpty) {
+        myStatus.docs.forEach((element) {
+          StatusModel statusModel = StatusModel.fromjson(element.data());
+
+          myStatusList.add(statusModel);
+        });
+      }
+//contactsStatus
+      if (await FlutterContacts.requestPermission()) {
+        contacts = await FlutterContacts.getContacts(withProperties: true);
+      }
+
+      if (contacts.isNotEmpty) {
+        contacts.forEach((element) async {
+          QuerySnapshot<Map<String, dynamic>> contactsStatus =
+              await firebaseFirestore
+                  .collection('status')
+                  .where('phoneNumber',
+                      isEqualTo: element.phones[0].number.replaceAll(' ', ''))
+                  .where('createdAt',
+                      isGreaterThan: DateTime.now()
+                          .subtract(const Duration(hours: 24))
+                          .millisecondsSinceEpoch)
+                  .get();
+          if (contactsStatus.docs.isNotEmpty) {
+            contactsStatus.docs.forEach((element) {
+              StatusModel statusModel = StatusModel.fromjson(element.data());
+              if (statusModel.whoCanSee.contains(AppConstants.uID)) {
+                contactsStatusList.add(statusModel);
+              }
+            });
+          }
+        });
+      }
+      //return two lists
+      return {'myStatus': myStatusList, 'contactsStatus': contactsStatusList};
+    } on FirebaseAuthException catch (e) {
       throw FireBaseException(e.code);
     }
   }

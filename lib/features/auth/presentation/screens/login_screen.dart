@@ -83,7 +83,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   )
                 ],
               ),
-              const Spacer(),
+              SizedBox(
+                height: 500.h,
+              ),
               BlocConsumer<AuthCubit, AuthState>(
                 listener: (context, state) {
                   if (state is AuthError) {

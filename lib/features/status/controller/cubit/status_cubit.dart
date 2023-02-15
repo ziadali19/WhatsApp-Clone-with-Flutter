@@ -8,6 +8,7 @@ import 'package:meta/meta.dart';
 import 'package:whatsapp_clone/core/network/failure.dart';
 import 'package:whatsapp_clone/core/utilis/constants.dart';
 import 'package:whatsapp_clone/features/auth/data/repository/auth_repository.dart';
+import 'package:whatsapp_clone/features/status/data/model/status_model.dart';
 import 'package:whatsapp_clone/features/status/data/repository/status_repository.dart';
 
 import '../../../auth/data/model/user_model.dart';
@@ -41,11 +42,12 @@ class StatusCubit extends Cubit<StatusState> {
       emit(UploadStoryError(l.message));
     }, (r) {
       emit(UploadStorySuccess());
+      getStatus();
     });
   }
 
   UserModel? userModel;
-  getUserData(context) async {
+  getUserData() async {
     emit(GetUserDataLoading());
     Either<Failure, UserModel> result = await baseAuthRepository.getUserData();
     result.fold((l) {
@@ -53,6 +55,20 @@ class StatusCubit extends Cubit<StatusState> {
     }, (r) {
       userModel = r;
       emit(GetUserDataSuccess());
+    });
+  }
+
+  Map<String, List<StatusModel>>? status;
+  getStatus() async {
+    status = null;
+    emit(GetStatusLoading());
+    var result = await baseStatusRepository.getStatus();
+    result.fold((l) {
+      emit(GetStatusError(l.message));
+    }, (r) {
+      status = r;
+
+      emit(GetStatusSuccess());
     });
   }
 }

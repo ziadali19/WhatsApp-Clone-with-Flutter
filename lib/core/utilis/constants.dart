@@ -9,7 +9,9 @@ import 'package:whatsapp_clone/features/auth/presentation/screens/otb_screen.dar
 import 'package:whatsapp_clone/features/auth/presentation/screens/user_information_screen.dart';
 import 'package:whatsapp_clone/features/chat/data/repository/chat_repository.dart';
 import 'package:whatsapp_clone/features/layout/presentation/screens/layout_screen.dart';
+import 'package:whatsapp_clone/features/status/data/model/status_model.dart';
 import 'package:whatsapp_clone/features/status/presentation/screens/confirm_status_screen.dart';
+import 'package:whatsapp_clone/features/status/presentation/screens/stories_view_screen.dart';
 
 import '../../features/chat/presentation/screens/chat_screen.dart';
 import '../../features/select_contacts/presentation/screens/contacts_screen.dart';
@@ -72,6 +74,13 @@ class AppConstants {
         return MaterialPageRoute(
           builder: (context) => ConfirmStatusScreen(
             pickedStory: pickedStory,
+          ),
+        );
+      case StoriesViewScreen.routeName:
+        final StatusModel statusModel = settings.arguments as StatusModel;
+        return MaterialPageRoute(
+          builder: (context) => StoriesViewScreen(
+            statusModel: statusModel,
           ),
         );
       default:

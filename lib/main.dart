@@ -59,7 +59,9 @@ class MyApp extends StatelessWidget {
           create: (context) => sl<ChatCubit>()..getUserData(),
         ),
         BlocProvider(
-          create: (context) => sl<StatusCubit>()..getUserData(context),
+          create: (context) => sl<StatusCubit>()
+            ..getUserData()
+            ..getStatus(),
         ),
       ],
       child: ScreenUtilInit(

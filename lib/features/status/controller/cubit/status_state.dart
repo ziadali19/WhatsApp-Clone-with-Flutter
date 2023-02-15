@@ -24,3 +24,13 @@ class UploadStoryError extends StatusState {
 
   UploadStoryError(this.errorMsg);
 }
+
+class GetStatusLoading extends StatusState {}
+
+class GetStatusSuccess extends StatusState {}
+
+class GetStatusError extends StatusState {
+  final String? errorMsg;
+
+  GetStatusError(this.errorMsg);
+}

@@ -28,8 +28,7 @@ class ConfirmStatusScreen extends StatelessWidget {
             AppConstants.showSnackBar(state.errorMsg, context, Colors.red);
           }
           if (state is UploadStorySuccess) {
-            Navigator.pushNamedAndRemoveUntil(
-                context, LayoutScreen.routeName, (route) => false);
+            Navigator.pop(context);
           }
         },
         builder: (context, state) {

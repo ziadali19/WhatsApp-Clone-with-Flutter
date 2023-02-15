@@ -38,7 +38,7 @@ class _LayoutScreenState extends State<LayoutScreen>
   @override
   void dispose() {
     super.dispose();
-    tabController.dispose();
+
     WidgetsBinding.instance.removeObserver(this);
   }
 
