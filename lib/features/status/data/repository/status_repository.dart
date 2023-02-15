@@ -46,7 +46,9 @@ class StatusRepository extends BaseStatusRepository {
   @override
   Future<Either<Failure, Map<String, List<StatusModel>>>> getStatus() async {
     try {
-      return right(await baseStatusRemoteDataSource.getStatus());
+      Map<String, List<StatusModel>> result =
+          await baseStatusRemoteDataSource.getStatus();
+      return right(result);
     } on FireBaseException catch (e) {
       throw left(FirebaseFailure(e.message));
     }

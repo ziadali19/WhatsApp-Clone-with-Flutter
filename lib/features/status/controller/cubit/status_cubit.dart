@@ -62,13 +62,16 @@ class StatusCubit extends Cubit<StatusState> {
   getStatus() async {
     status = null;
     emit(GetStatusLoading());
-    var result = await baseStatusRepository.getStatus();
+    Either<Failure, Map<String, List<StatusModel>>> result =
+        await baseStatusRepository.getStatus();
     result.fold((l) {
       emit(GetStatusError(l.message));
     }, (r) {
-      status = r;
-
-      emit(GetStatusSuccess());
+      Future.delayed(const Duration(seconds: 3), () {
+        status = r;
+        print(status!['contactsStatus']);
+        emit(GetStatusSuccess());
+      });
     });
   }
 }

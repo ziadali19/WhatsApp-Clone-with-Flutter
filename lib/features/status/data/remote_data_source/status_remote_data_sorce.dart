@@ -79,16 +79,20 @@ class StatusRemoteDataSource extends BaseStatusRemoteDataSource {
       QuerySnapshot<Map<String, dynamic>> status = await firebaseFirestore
           .collection('status')
           .where('uID', isEqualTo: AppConstants.uID)
+          .where('createdAt',
+              isGreaterThan: DateTime.now()
+                  .subtract(const Duration(hours: 24))
+                  .millisecondsSinceEpoch)
           .get();
       if (status.docs.isNotEmpty) {
         status.docs.forEach((element) async {
           StatusModel statusModel = StatusModel.fromjson(element.data());
           statusImagesUrl = statusModel.photoUrl;
           statusImagesUrl.add(statusImageUrl);
-          await firebaseFirestore
-              .collection('status')
-              .doc(element.id)
-              .update({'photoUrl': statusImagesUrl});
+          await firebaseFirestore.collection('status').doc(element.id).update({
+            'photoUrl': statusImagesUrl,
+            'createdAt': DateTime.now().millisecondsSinceEpoch
+          });
         });
       } else {
         statusImagesUrl = [statusImageUrl];
@@ -136,7 +140,8 @@ class StatusRemoteDataSource extends BaseStatusRemoteDataSource {
       }
 //contactsStatus
       if (await FlutterContacts.requestPermission()) {
-        contacts = await FlutterContacts.getContacts(withProperties: true);
+        contacts = await FlutterContacts.getContacts(
+            withProperties: true, withPhoto: true);
       }
 
       if (contacts.isNotEmpty) {
