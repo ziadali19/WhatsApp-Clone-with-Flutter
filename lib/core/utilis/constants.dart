@@ -8,6 +8,7 @@ import 'package:whatsapp_clone/features/auth/presentation/screens/login_screen.d
 import 'package:whatsapp_clone/features/auth/presentation/screens/otb_screen.dart';
 import 'package:whatsapp_clone/features/auth/presentation/screens/user_information_screen.dart';
 import 'package:whatsapp_clone/features/chat/data/repository/chat_repository.dart';
+import 'package:whatsapp_clone/features/group/presentation/screens/create_group_screen.dart';
 import 'package:whatsapp_clone/features/layout/presentation/screens/layout_screen.dart';
 import 'package:whatsapp_clone/features/status/data/model/status_model.dart';
 import 'package:whatsapp_clone/features/status/presentation/screens/confirm_status_screen.dart';
@@ -57,9 +58,9 @@ class AppConstants {
         return MaterialPageRoute(
           builder: (context) => ChatScreen(
             uID: userData['uID'],
-            isOnline: userData['isOnline'],
             name: userData['name'],
             profilePic: userData['profilePic'],
+            isGroupChat: userData['isGroupChat'],
           ),
         );
       case OTBScreen.routeName:
@@ -82,6 +83,11 @@ class AppConstants {
           builder: (context) => StoriesViewScreen(
             statusModel: statusModel,
           ),
+        );
+
+      case CreateGroupScreen.routeName:
+        return MaterialPageRoute(
+          builder: (context) => const CreateGroupScreen(),
         );
       default:
         return MaterialPageRoute(

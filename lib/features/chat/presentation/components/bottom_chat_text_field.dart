@@ -22,11 +22,14 @@ import '../../../../core/utilis/constants.dart';
 class BottomChatTextField extends StatefulWidget {
   const BottomChatTextField({
     super.key,
-    required this.recieverId,
+    this.recieverId,
     required this.receiverName,
+    required this.isGroupChat,
+    this.groupId,
   });
-  final String recieverId;
-
+  final String? recieverId;
+  final bool isGroupChat;
+  final String? groupId;
   final String receiverName;
   @override
   State<BottomChatTextField> createState() => _BottomChatTextFieldState();
@@ -172,9 +175,12 @@ class _BottomChatTextFieldState extends State<BottomChatTextField> {
                                     await gifPicker();
                                     if (gifPicked != null) {
                                       ChatCubit.get(context).sendGifMessage(
+                                          isGroupChat: widget.isGroupChat,
                                           senderUser:
                                               ChatCubit.get(context).userModel!,
-                                          recieverId: widget.recieverId,
+                                          recieverId: widget.isGroupChat
+                                              ? widget.groupId!
+                                              : widget.recieverId!,
                                           text: gifPicked!.url!,
                                           replyOn: cubit.message ?? '',
                                           replyOnMessageType:
@@ -208,9 +214,10 @@ class _BottomChatTextFieldState extends State<BottomChatTextField> {
                                     await imagePicker();
                                     if (imagePicked != null) {
                                       ChatCubit.get(context).sendFileMessage(
+                                          isGroupChat: widget.isGroupChat,
                                           senderUser:
                                               ChatCubit.get(context).userModel!,
-                                          receiverId: widget.recieverId,
+                                          receiverId: widget.recieverId!,
                                           file: imagePicked!,
                                           messageType: MessageEnum.image,
                                           context: context,
@@ -238,9 +245,12 @@ class _BottomChatTextFieldState extends State<BottomChatTextField> {
                                     await videoPicker();
                                     if (videoPicked != null) {
                                       ChatCubit.get(context).sendFileMessage(
+                                          isGroupChat: widget.isGroupChat,
                                           senderUser:
                                               ChatCubit.get(context).userModel!,
-                                          receiverId: widget.recieverId,
+                                          receiverId: widget.isGroupChat
+                                              ? widget.groupId!
+                                              : widget.recieverId!,
                                           file: videoPicked!,
                                           messageType: MessageEnum.video,
                                           context: context,
@@ -292,9 +302,12 @@ class _BottomChatTextFieldState extends State<BottomChatTextField> {
                             onPressed: () async {
                               if (messageController.text.trim().isNotEmpty) {
                                 await ChatCubit.get(context).sendTextMessage(
+                                    isGroupChat: widget.isGroupChat,
                                     senderUser:
                                         ChatCubit.get(context).userModel!,
-                                    recieverId: widget.recieverId,
+                                    recieverId: widget.isGroupChat
+                                        ? widget.groupId!
+                                        : widget.recieverId!,
                                     text: messageController.text.trim(),
                                     replyOn: cubit.message ?? '',
                                     replyOnMessageType:
@@ -308,6 +321,15 @@ class _BottomChatTextFieldState extends State<BottomChatTextField> {
                                   cubit.cancelReply();
                                 }
                                 messageController.text = '';
+                                if (messageController.text.trim().isNotEmpty) {
+                                  setState(() {
+                                    isThereAText = true;
+                                  });
+                                } else {
+                                  setState(() {
+                                    isThereAText = false;
+                                  });
+                                }
                               } else {
                                 if (!isRecordInit) {
                                   return;
@@ -319,9 +341,12 @@ class _BottomChatTextFieldState extends State<BottomChatTextField> {
                                 if (isRecording) {
                                   await soundRecorder!.stopRecorder();
                                   await ChatCubit.get(context).sendFileMessage(
+                                      isGroupChat: widget.isGroupChat,
                                       senderUser:
                                           ChatCubit.get(context).userModel!,
-                                      receiverId: widget.recieverId,
+                                      receiverId: widget.isGroupChat
+                                          ? widget.groupId!
+                                          : widget.recieverId!,
                                       file: File(path),
                                       messageType: MessageEnum.audio,
                                       context: context,
@@ -358,9 +383,17 @@ class _BottomChatTextFieldState extends State<BottomChatTextField> {
                   ? SizedBox(
                       height: 310.h,
                       child: EmojiPicker(
+                        textEditingController: messageController,
                         onEmojiSelected: (category, emoji) {
-                          messageController.text =
-                              messageController.text + emoji.emoji;
+                          if (messageController.text.trim().isNotEmpty) {
+                            setState(() {
+                              isThereAText = true;
+                            });
+                          } else {
+                            setState(() {
+                              isThereAText = false;
+                            });
+                          }
                         },
                       ),
                     )

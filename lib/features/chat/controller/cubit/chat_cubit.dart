@@ -42,8 +42,10 @@ class ChatCubit extends Cubit<ChatState> {
       required String text,
       required MessageEnum replyOnMessageType,
       required String replyOn,
-      required String replyOnUserName}) async {
+      required String replyOnUserName,
+      required bool isGroupChat}) async {
     Either<Failure, void> result = await baseChatRepository.sendTextMessage(
+        isGroupChat: isGroupChat,
         senderUser: senderUser,
         recieverId: recieverId,
         text: text,
@@ -61,11 +63,13 @@ class ChatCubit extends Cubit<ChatState> {
       required String text,
       required MessageEnum replyOnMessageType,
       required String replyOn,
-      required String replyOnUserName}) async {
+      required String replyOnUserName,
+      required bool isGroupChat}) async {
     int lastIndexOfDashIncrement = text.lastIndexOf('-') + 1;
     String lastPart = text.substring(lastIndexOfDashIncrement);
     String newUrl = 'https://i.giphy.com/media/$lastPart/200.gif';
     Either<Failure, void> result = await baseChatRepository.sendGifMessage(
+        isGroupChat: isGroupChat,
         senderUser: senderUser,
         recieverId: recieverId,
         text: newUrl,
@@ -110,9 +114,11 @@ class ChatCubit extends Cubit<ChatState> {
       required BuildContext context,
       required MessageEnum replyOnMessageType,
       required String replyOn,
-      required String replyOnUserName}) async {
+      required String replyOnUserName,
+      required bool isGroupChat}) async {
     emit(SendFileLoading());
     Either<Failure, void> result = await baseChatRepository.sendFileMessage(
+        isGroupChat: isGroupChat,
         senderUser: senderUser,
         receiverId: receiverId,
         file: file,
@@ -152,5 +158,18 @@ class ChatCubit extends Cubit<ChatState> {
     result.fold((l) {
       AppConstants.showSnackBar(l.message, context, Colors.red);
     }, (r) {});
+  }
+
+  getGroupMessages(String groupId, context) {
+    Stream<List<MessageModel>>? messages;
+    Either<Failure, Stream<List<MessageModel>>> result =
+        baseChatRepository.getGroupMessages(groupId);
+
+    result.fold((l) {
+      AppConstants.showSnackBar(l.message, context, Colors.red);
+    }, (r) {
+      messages = r;
+    });
+    return messages;
   }
 }

@@ -24,7 +24,8 @@ abstract class BaseChatRemoteDataSource {
       required String text,
       required MessageEnum replyOnMessageType,
       required String replyOn,
-      required String replyOnUserName});
+      required String replyOnUserName,
+      required bool isGroupChat});
   Future<void> sendFileMessage(
       {required UserModel senderUser,
       required String receiverId,
@@ -33,7 +34,8 @@ abstract class BaseChatRemoteDataSource {
       required BuildContext context,
       required MessageEnum replyOnMessageType,
       required String replyOn,
-      required String replyOnUserName});
+      required String replyOnUserName,
+      required bool isGroupChat});
 
   Future<void> sendGifMessage(
       {required UserModel senderUser,
@@ -41,8 +43,11 @@ abstract class BaseChatRemoteDataSource {
       required String text,
       required MessageEnum replyOnMessageType,
       required String replyOn,
-      required String replyOnUserName});
+      required String replyOnUserName,
+      required bool isGroupChat});
   Stream<List<MessageModel>> getMessages(String recieverId);
+
+  Stream<List<MessageModel>> getGroupMessages(String groupId);
 }
 
 class ChatRemoteDataSource extends BaseChatRemoteDataSource {
@@ -54,37 +59,45 @@ class ChatRemoteDataSource extends BaseChatRemoteDataSource {
 
   _saveDataToContactsSubCollections(
       {required UserModel senderUser,
-      required UserModel recieverUser,
+      required UserModel? recieverUser,
       required String text,
       required DateTime time,
-      required String recieverId}) async {
-    ChatContactModel senderChatContactModel = ChatContactModel(
-      name: recieverUser.name,
-      profilePic: recieverUser.profilePic,
-      timeSent: time,
-      lastMessage: text,
-      contactId: recieverUser.uID,
-    );
-    ChatContactModel recieverChatContactModel = ChatContactModel(
-      name: senderUser.name,
-      profilePic: senderUser.profilePic,
-      timeSent: time,
-      lastMessage: text,
-      contactId: senderUser.uID,
-    );
+      required String recieverId,
+      required bool isGroupChat}) async {
     try {
-      await firebaseFirestore
-          .collection('users')
-          .doc(recieverId)
-          .collection('chats')
-          .doc(senderUser.uID)
-          .set(recieverChatContactModel.toJson());
-      await firebaseFirestore
-          .collection('users')
-          .doc(senderUser.uID)
-          .collection('chats')
-          .doc(recieverUser.uID)
-          .set(senderChatContactModel.toJson());
+      if (isGroupChat) {
+        await firebaseFirestore.collection('groups').doc(recieverId).update({
+          'lastMessage': text,
+          'timeSent': DateTime.now().millisecondsSinceEpoch
+        });
+      } else {
+        ChatContactModel senderChatContactModel = ChatContactModel(
+          name: recieverUser!.name,
+          profilePic: recieverUser.profilePic,
+          timeSent: time,
+          lastMessage: text,
+          contactId: recieverUser.uID,
+        );
+        ChatContactModel recieverChatContactModel = ChatContactModel(
+          name: senderUser.name,
+          profilePic: senderUser.profilePic,
+          timeSent: time,
+          lastMessage: text,
+          contactId: senderUser.uID,
+        );
+        await firebaseFirestore
+            .collection('users')
+            .doc(recieverId)
+            .collection('chats')
+            .doc(senderUser.uID)
+            .set(recieverChatContactModel.toJson());
+        await firebaseFirestore
+            .collection('users')
+            .doc(senderUser.uID)
+            .collection('chats')
+            .doc(recieverUser.uID)
+            .set(senderChatContactModel.toJson());
+      }
     } on FirebaseException catch (e) {
       throw FireBaseException(e.code);
     }
@@ -96,40 +109,49 @@ class ChatRemoteDataSource extends BaseChatRemoteDataSource {
       required DateTime timeSent,
       required String messageId,
       required String userName,
-      required String recieverUserNam,
+      required String? recieverUserNam,
       required MessageEnum messageType,
       required MessageEnum replyOnMessageType,
       required String replyOn,
-      required String replyOnUserName}) async {
-    MessageModel messageModel = MessageModel(
-        senderId: AppConstants.uID!,
-        recieverId: recieverUserId,
-        text: text,
-        messageType: messageType,
-        messageId: messageId,
-        isSeen: false,
-        timeSent: timeSent,
-        replyOn: replyOn,
-        replyOnMessageType: replyOnMessageType,
-        replyOnUserName: replyOnUserName);
-
+      required String replyOnUserName,
+      required bool isGroupChat}) async {
     try {
-      await firebaseFirestore
-          .collection('users')
-          .doc(AppConstants.uID)
-          .collection('chats')
-          .doc(recieverUserId)
-          .collection('messages')
-          .doc(messageId)
-          .set(messageModel.toJson());
-      await firebaseFirestore
-          .collection('users')
-          .doc(recieverUserId)
-          .collection('chats')
-          .doc(AppConstants.uID)
-          .collection('messages')
-          .doc(messageId)
-          .set(messageModel.toJson());
+      MessageModel messageModel = MessageModel(
+          senderId: AppConstants.uID!,
+          recieverId: recieverUserId,
+          text: text,
+          messageType: messageType,
+          messageId: messageId,
+          isSeen: false,
+          timeSent: timeSent,
+          replyOn: replyOn,
+          replyOnMessageType: replyOnMessageType,
+          replyOnUserName: replyOnUserName);
+      if (isGroupChat) {
+        await firebaseFirestore
+            .collection('groups')
+            .doc(recieverUserId)
+            .collection('messages')
+            .doc(messageId)
+            .set(messageModel.toJson());
+      } else {
+        await firebaseFirestore
+            .collection('users')
+            .doc(AppConstants.uID)
+            .collection('chats')
+            .doc(recieverUserId)
+            .collection('messages')
+            .doc(messageId)
+            .set(messageModel.toJson());
+        await firebaseFirestore
+            .collection('users')
+            .doc(recieverUserId)
+            .collection('chats')
+            .doc(AppConstants.uID)
+            .collection('messages')
+            .doc(messageId)
+            .set(messageModel.toJson());
+      }
     } on FirebaseException catch (e) {
       throw FireBaseException(e.code);
     }
@@ -142,13 +164,19 @@ class ChatRemoteDataSource extends BaseChatRemoteDataSource {
       required String text,
       required MessageEnum replyOnMessageType,
       required String replyOn,
-      required String replyOnUserName}) async {
+      required String replyOnUserName,
+      required bool isGroupChat}) async {
     try {
       DateTime time = DateTime.now();
-      UserModel recieverUser = UserModel.fromJson(
-          await firebaseFirestore.collection('users').doc(recieverId).get());
       String messageId = const Uuid().v1();
+      UserModel? recieverUser;
+      if (!isGroupChat) {
+        recieverUser = UserModel.fromJson(
+            await firebaseFirestore.collection('users').doc(recieverId).get());
+      }
+
       _saveDataToContactsSubCollections(
+          isGroupChat: isGroupChat,
           senderUser: senderUser,
           recieverUser: recieverUser,
           text: text,
@@ -163,8 +191,9 @@ class ChatRemoteDataSource extends BaseChatRemoteDataSource {
           timeSent: time,
           messageId: messageId,
           userName: senderUser.name!,
-          recieverUserNam: recieverUser.name!,
-          messageType: MessageEnum.text);
+          recieverUserNam: recieverUser?.name!,
+          messageType: MessageEnum.text,
+          isGroupChat: isGroupChat);
     } on FirebaseException catch (e) {
       throw FireBaseException(e.code);
     }
@@ -178,6 +207,28 @@ class ChatRemoteDataSource extends BaseChatRemoteDataSource {
           .doc(AppConstants.uID)
           .collection('chats')
           .doc(recieverId)
+          .collection('messages')
+          .orderBy('timeSent', descending: false)
+          .snapshots()
+          .map((event) {
+        List<MessageModel> messages = [];
+        for (QueryDocumentSnapshot<Map<String, dynamic>> message
+            in event.docs) {
+          messages.add(MessageModel.fromJson(message.data()));
+        }
+        return messages;
+      });
+    } on FirebaseException catch (e) {
+      throw FireBaseException(e.code);
+    }
+  }
+
+  @override
+  Stream<List<MessageModel>> getGroupMessages(String groupId) {
+    try {
+      return firebaseFirestore
+          .collection('groups')
+          .doc(groupId)
           .collection('messages')
           .orderBy('timeSent', descending: false)
           .snapshots()
@@ -215,10 +266,15 @@ class ChatRemoteDataSource extends BaseChatRemoteDataSource {
       required BuildContext context,
       required MessageEnum replyOnMessageType,
       required String replyOn,
-      required String replyOnUserName}) async {
+      required String replyOnUserName,
+      required bool isGroupChat}) async {
     try {
-      UserModel receiverUser = UserModel.fromJson(
-          await firebaseFirestore.collection('users').doc(receiverId).get());
+      UserModel? receiverUser;
+      if (!isGroupChat) {
+        receiverUser = UserModel.fromJson(
+            await firebaseFirestore.collection('users').doc(receiverId).get());
+      }
+
       String messageId = const Uuid().v1();
       String fileUrl = '';
       Either<Failure, String> result =
@@ -249,18 +305,20 @@ class ChatRemoteDataSource extends BaseChatRemoteDataSource {
           contactMsg = '';
       }
       _saveDataToContactsSubCollections(
+          isGroupChat: isGroupChat,
           senderUser: senderUser,
           recieverUser: receiverUser,
           text: contactMsg,
           time: DateTime.now(),
           recieverId: receiverId);
       _saveMessageToMessageSubCollections(
+          isGroupChat: isGroupChat,
           recieverUserId: receiverId,
           text: fileUrl,
           timeSent: DateTime.now(),
           messageId: messageId,
           userName: senderUser.name!,
-          recieverUserNam: receiverUser.name!,
+          recieverUserNam: receiverUser?.name!,
           messageType: messageType,
           replyOn: replyOn,
           replyOnMessageType: replyOnMessageType,
@@ -277,25 +335,31 @@ class ChatRemoteDataSource extends BaseChatRemoteDataSource {
       required String text,
       required MessageEnum replyOnMessageType,
       required String replyOn,
-      required String replyOnUserName}) async {
+      required String replyOnUserName,
+      required bool isGroupChat}) async {
     try {
       DateTime time = DateTime.now();
-      UserModel recieverUser = UserModel.fromJson(
-          await firebaseFirestore.collection('users').doc(recieverId).get());
+      UserModel? recieverUser;
+      if (!isGroupChat) {
+        recieverUser = UserModel.fromJson(
+            await firebaseFirestore.collection('users').doc(recieverId).get());
+      }
       String messageId = const Uuid().v1();
       _saveDataToContactsSubCollections(
+          isGroupChat: isGroupChat,
           senderUser: senderUser,
           recieverUser: recieverUser,
           text: '📷 GIF',
           time: time,
           recieverId: recieverId);
       _saveMessageToMessageSubCollections(
+          isGroupChat: isGroupChat,
           recieverUserId: recieverId,
           text: text,
           timeSent: time,
           messageId: messageId,
           userName: senderUser.name!,
-          recieverUserNam: recieverUser.name!,
+          recieverUserNam: recieverUser?.name!,
           messageType: MessageEnum.gif,
           replyOn: replyOn,
           replyOnMessageType: replyOnMessageType,
@@ -305,6 +369,7 @@ class ChatRemoteDataSource extends BaseChatRemoteDataSource {
     }
   }
 
+  @override
   Future<void> setMessagesToSeen(String receiverId, String messageId) async {
     try {
       await firebaseFirestore

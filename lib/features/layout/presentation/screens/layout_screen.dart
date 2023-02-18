@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:whatsapp_clone/core/utilis/constants.dart';
 import 'package:whatsapp_clone/features/chat/data/repository/chat_repository.dart';
+import 'package:whatsapp_clone/features/group/presentation/screens/create_group_screen.dart';
 import 'package:whatsapp_clone/features/layout/controller/cubit/layout_cubit.dart';
 import 'package:whatsapp_clone/features/status/presentation/screens/status_contacts_screen.dart';
 
@@ -87,9 +88,17 @@ class _LayoutScreenState extends State<LayoutScreen>
                 icon: const Icon(Icons.search, color: Colors.grey),
                 onPressed: () {},
               ),
-              IconButton(
-                icon: const Icon(Icons.more_vert, color: Colors.grey),
-                onPressed: () {},
+              PopupMenuButton(
+                icon: const Icon(Icons.more_vert_rounded, color: Colors.grey),
+                itemBuilder: (context) {
+                  return [
+                    PopupMenuItem(
+                      child: const Text('Create Group'),
+                      onTap: () => Future(() => Navigator.pushNamed(
+                          context, CreateGroupScreen.routeName)),
+                    )
+                  ];
+                },
               ),
             ],
             bottom: TabBar(

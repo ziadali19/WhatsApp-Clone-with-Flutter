@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:whatsapp_clone/core/network/failure.dart';
 import 'package:whatsapp_clone/features/chat/data/repository/chat_repository.dart';
+import 'package:whatsapp_clone/features/group/data/model/group_model.dart';
 
 import '../../../../core/utilis/constants.dart';
 import '../../../chat/data/model/chat_contact_model.dart';
@@ -23,6 +24,18 @@ class LayoutCubit extends Cubit<LayoutState> {
     Stream<List<ChatContactModel>>? chatContacts;
     Either<Failure, Stream<List<ChatContactModel>>> result =
         baseLayoutRepository.getContactsChats();
+    result.fold((l) {
+      AppConstants.showSnackBar(l.message, context, Colors.red);
+    }, (r) {
+      chatContacts = r;
+    });
+    return chatContacts;
+  }
+
+  Stream<List<GroupModel>>? getGroupsChats(context) {
+    Stream<List<GroupModel>>? chatContacts;
+    Either<Failure, Stream<List<GroupModel>>> result =
+        baseLayoutRepository.getGroupsChats();
     result.fold((l) {
       AppConstants.showSnackBar(l.message, context, Colors.red);
     }, (r) {

@@ -14,9 +14,12 @@ import '../../controller/cubit/chat_cubit.dart';
 import 'my_message_card.dart';
 
 class ChatList extends StatefulWidget {
-  const ChatList({Key? key, required this.recieverId}) : super(key: key);
-  final String recieverId;
-
+  const ChatList(
+      {Key? key, this.recieverId, required this.isGroupChat, this.groupId})
+      : super(key: key);
+  final String? recieverId;
+  final bool isGroupChat;
+  final String? groupId;
   @override
   State<ChatList> createState() => _ChatListState();
 }
@@ -36,7 +39,9 @@ class _ChatListState extends State<ChatList> {
       builder: (context, state) {
         ChatCubit cubit = ChatCubit.get(context);
         return StreamBuilder<List<MessageModel>>(
-            stream: cubit.getMessages(widget.recieverId, context),
+            stream: widget.isGroupChat
+                ? cubit.getGroupMessages(widget.groupId!, context)
+                : cubit.getMessages(widget.recieverId!, context),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
@@ -68,13 +73,15 @@ class _ChatListState extends State<ChatList> {
                         controller: scrollController,
                         itemCount: snapshot.data!.length,
                         itemBuilder: (context, index) {
-                          if (!snapshot.data![index].isSeen &&
-                              snapshot.data![index].recieverId ==
-                                  AppConstants.uID) {
-                            cubit.setMessagesToSeen(
-                                snapshot.data![index].recieverId,
-                                snapshot.data![index].messageId,
-                                context);
+                          if (!widget.isGroupChat) {
+                            if (!snapshot.data![index].isSeen &&
+                                snapshot.data![index].recieverId ==
+                                    AppConstants.uID) {
+                              cubit.setMessagesToSeen(
+                                  snapshot.data![index].recieverId,
+                                  snapshot.data![index].messageId,
+                                  context);
+                            }
                           }
                           if (snapshot.data![index].senderId ==
                               AppConstants.uID) {

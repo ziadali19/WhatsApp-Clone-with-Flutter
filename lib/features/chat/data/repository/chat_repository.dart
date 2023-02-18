@@ -19,7 +19,8 @@ abstract class BaseChatRepository {
       required String text,
       required MessageEnum replyOnMessageType,
       required String replyOn,
-      required String replyOnUserName});
+      required String replyOnUserName,
+      required bool isGroupChat});
   Either<Failure, Stream<List<MessageModel>>> getMessages(String recieverId);
   Future<Either<Failure, void>> userStatus(bool isOnline);
   Future<Either<Failure, void>> sendFileMessage(
@@ -30,15 +31,18 @@ abstract class BaseChatRepository {
       required BuildContext context,
       required MessageEnum replyOnMessageType,
       required String replyOn,
-      required String replyOnUserName});
-  Future<Either<Failure, void>> sendGifMessage({
-    required UserModel senderUser,
-    required String recieverId,
-    required String text,
-    required MessageEnum replyOnMessageType,
-    required String replyOn,
-    required String replyOnUserName,
-  });
+      required String replyOnUserName,
+      required bool isGroupChat});
+  Future<Either<Failure, void>> sendGifMessage(
+      {required UserModel senderUser,
+      required String recieverId,
+      required String text,
+      required MessageEnum replyOnMessageType,
+      required String replyOn,
+      required String replyOnUserName,
+      required bool isGroupChat});
+
+  Either<Failure, Stream<List<MessageModel>>> getGroupMessages(String groupId);
 }
 
 class ChatRepository extends BaseChatRepository {
@@ -52,9 +56,11 @@ class ChatRepository extends BaseChatRepository {
       required String text,
       required MessageEnum replyOnMessageType,
       required String replyOn,
-      required String replyOnUserName}) async {
+      required String replyOnUserName,
+      required bool isGroupChat}) async {
     try {
       await baseChatRemoteDataSource.sendTextMessage(
+          isGroupChat: isGroupChat,
           senderUser: senderUser,
           recieverId: recieverId,
           text: text,
@@ -95,7 +101,8 @@ class ChatRepository extends BaseChatRepository {
       required BuildContext context,
       required MessageEnum replyOnMessageType,
       required String replyOn,
-      required String replyOnUserName}) async {
+      required String replyOnUserName,
+      required bool isGroupChat}) async {
     try {
       await baseChatRemoteDataSource.sendFileMessage(
           senderUser: senderUser,
@@ -105,7 +112,8 @@ class ChatRepository extends BaseChatRepository {
           context: context,
           replyOn: replyOn,
           replyOnMessageType: replyOnMessageType,
-          replyOnUserName: replyOnUserName);
+          replyOnUserName: replyOnUserName,
+          isGroupChat: isGroupChat);
       return right(null);
     } on FireBaseException catch (e) {
       return left(FirebaseFailure(e.message));
@@ -114,7 +122,8 @@ class ChatRepository extends BaseChatRepository {
 
   @override
   Future<Either<Failure, void>> sendGifMessage(
-      {required UserModel senderUser,
+      {required bool isGroupChat,
+      required UserModel senderUser,
       required String recieverId,
       required String text,
       required MessageEnum replyOnMessageType,
@@ -122,6 +131,7 @@ class ChatRepository extends BaseChatRepository {
       required String replyOnUserName}) async {
     try {
       await baseChatRemoteDataSource.sendGifMessage(
+          isGroupChat: isGroupChat,
           senderUser: senderUser,
           recieverId: recieverId,
           text: text,
@@ -140,6 +150,15 @@ class ChatRepository extends BaseChatRepository {
     try {
       await baseChatRemoteDataSource.setMessagesToSeen(receiverId, messageId);
       return right(null);
+    } on FireBaseException catch (e) {
+      return left(FirebaseFailure(e.message));
+    }
+  }
+
+  @override
+  Either<Failure, Stream<List<MessageModel>>> getGroupMessages(String groupId) {
+    try {
+      return right(baseChatRemoteDataSource.getGroupMessages(groupId));
     } on FireBaseException catch (e) {
       return left(FirebaseFailure(e.message));
     }

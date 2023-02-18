@@ -11,16 +11,19 @@ import '../components/bottom_chat_text_field.dart';
 import '../components/chat_list.dart';
 
 class ChatScreen extends StatelessWidget {
-  const ChatScreen(
-      {super.key,
-      required this.uID,
-      required this.isOnline,
-      required this.name,
-      required this.profilePic});
+  const ChatScreen({
+    super.key,
+    required this.uID,
+    required this.name,
+    required this.profilePic,
+    required this.isGroupChat,
+  });
   final String? uID;
-  final bool? isOnline;
+
   final String? name;
   final String? profilePic;
+  final bool isGroupChat;
+
   static const routeName = '/chat-screen';
   @override
   Widget build(BuildContext context) {
@@ -41,28 +44,31 @@ class ChatScreen extends StatelessWidget {
                 Text(name!,
                     style: TextStyle(
                         fontWeight: FontWeight.w500, fontSize: 17.sp)),
-                StreamBuilder<UserModel>(
-                    stream: cubit.getAnyUserData(uID!, context),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return SizedBox(
-                          width: 7.w,
-                          height: 7.h,
-                          child: const CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: AppConstants.tabColor,
-                          ),
-                        );
-                      } else if (snapshot.hasError) {
-                        return const Text('');
-                      } else {
-                        return Text(
-                          snapshot.data!.isOnline! ? 'Online' : 'Offline',
-                          style: TextStyle(
-                              fontWeight: FontWeight.w400, fontSize: 13.sp),
-                        );
-                      }
-                    })
+                isGroupChat
+                    ? const SizedBox()
+                    : StreamBuilder<UserModel>(
+                        stream: cubit.getAnyUserData(uID!, context),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return SizedBox(
+                              width: 7.w,
+                              height: 7.h,
+                              child: const CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: AppConstants.tabColor,
+                              ),
+                            );
+                          } else if (snapshot.hasError) {
+                            return const SizedBox();
+                          } else {
+                            return Text(
+                              snapshot.data!.isOnline! ? 'Online' : 'Offline',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w400, fontSize: 13.sp),
+                            );
+                          }
+                        })
               ],
             );
           },
@@ -87,12 +93,16 @@ class ChatScreen extends StatelessWidget {
         children: [
           Expanded(
             child: ChatList(
-              recieverId: uID!,
+              isGroupChat: isGroupChat,
+              groupId: uID,
+              recieverId: uID,
             ),
           ),
           BottomChatTextField(
-            recieverId: uID!,
+            isGroupChat: isGroupChat,
+            recieverId: uID,
             receiverName: name!,
+            groupId: uID,
           )
         ],
       ),

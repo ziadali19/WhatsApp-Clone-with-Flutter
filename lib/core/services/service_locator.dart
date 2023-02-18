@@ -12,6 +12,9 @@ import '../../features/chat/controller/cubit/chat_cubit.dart';
 
 import '../../features/chat/data/remote_data_source/chat_remote_data_source.dart';
 import '../../features/chat/data/repository/chat_repository.dart';
+import '../../features/group/controller/cubit/group_cubit.dart';
+import '../../features/group/data/remote_data_source/group_remote_data_source.dart';
+import '../../features/group/data/repository/group_repository.dart';
 import '../../features/layout/controller/cubit/layout_cubit.dart';
 import '../../features/layout/data/remote_data_source/layout_remote_data_source.dart';
 import '../../features/layout/data/repository/layout_repository.dart';
@@ -69,5 +72,10 @@ class ServicesLocator {
     sl.registerLazySingleton<BaseStatusRemoteDataSource>(() =>
         StatusRemoteDataSource(
             FirebaseFirestore.instance, FirebaseAuth.instance, sl()));
+
+    sl.registerFactory(() => GroupCubit(sl(), sl()));
+    sl.registerLazySingleton<BaseGroupRepository>(() => GroupRepository(sl()));
+    sl.registerLazySingleton<BaseGroupRemoteDataSource>(
+        () => GroupRemoteDataSource(FirebaseFirestore.instance, sl()));
   }
 }
