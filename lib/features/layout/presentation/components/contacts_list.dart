@@ -99,7 +99,7 @@ class ContactsList extends StatelessWidget {
                       );
                     } else {
                       return const Center(
-                        child: CircularProgressIndicator(
+                        child: LinearProgressIndicator(
                           color: AppConstants.tabColor,
                         ),
                       );
@@ -181,7 +181,7 @@ class ContactsList extends StatelessWidget {
                       );
                     } else {
                       return const Center(
-                        child: CircularProgressIndicator(
+                        child: LinearProgressIndicator(
                           color: AppConstants.tabColor,
                         ),
                       );

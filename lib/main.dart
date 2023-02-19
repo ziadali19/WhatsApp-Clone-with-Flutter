@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:whatsapp_clone/features/auth/presentation/screens/user_information_screen.dart';
+import 'package:whatsapp_clone/features/call/controller/cubit/call_cubit.dart';
 import 'package:whatsapp_clone/features/chat/data/repository/chat_repository.dart';
 
 import 'package:whatsapp_clone/features/landing/presentation/screens/landing_screen.dart';
@@ -61,6 +62,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => sl<GroupCubit>()..getContacts(),
+        ),
+        BlocProvider(
+          create: (context) => sl<CallCubit>()..getUserData(),
         ),
         BlocProvider(
           create: (context) => sl<StatusCubit>()
