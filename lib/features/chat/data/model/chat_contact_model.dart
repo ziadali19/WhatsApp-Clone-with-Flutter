@@ -1,5 +1,3 @@
-import 'package:intl/intl.dart';
-
 class ChatContactModel {
   final String? name;
   final String? profilePic;

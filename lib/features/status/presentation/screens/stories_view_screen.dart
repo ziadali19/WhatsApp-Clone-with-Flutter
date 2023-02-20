@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:story_view/story_view.dart';
 import 'package:whatsapp_clone/features/status/data/model/status_model.dart';

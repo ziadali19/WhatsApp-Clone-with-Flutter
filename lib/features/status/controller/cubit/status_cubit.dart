@@ -1,12 +1,11 @@
 import 'dart:io';
 
-import 'package:bloc/bloc.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:meta/meta.dart';
+
 import 'package:whatsapp_clone/core/network/failure.dart';
-import 'package:whatsapp_clone/core/utilis/constants.dart';
+
 import 'package:whatsapp_clone/features/auth/data/repository/auth_repository.dart';
 import 'package:whatsapp_clone/features/status/data/model/status_model.dart';
 import 'package:whatsapp_clone/features/status/data/repository/status_repository.dart';
@@ -69,6 +68,7 @@ class StatusCubit extends Cubit<StatusState> {
     }, (r) {
       Future.delayed(const Duration(seconds: 3), () {
         status = r;
+        // ignore: avoid_print
         print(status!['contactsStatus']);
         emit(GetStatusSuccess());
       });

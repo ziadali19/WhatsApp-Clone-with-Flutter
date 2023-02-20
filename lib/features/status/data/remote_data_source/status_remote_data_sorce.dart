@@ -1,10 +1,12 @@
+// ignore_for_file: avoid_function_literals_in_foreach_calls
+
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_contacts/contact.dart';
+
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:uuid/uuid.dart';
 import 'package:whatsapp_clone/core/network/failure.dart';

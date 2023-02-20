@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-import 'package:whatsapp_clone/features/chat/presentation/components/display_all_types_of_messages.dart';
-
 import '../../../../core/common/enums/messgae_enum.dart';
 import '../../../../core/utilis/constants.dart';
 import '../../controller/cubit/chat_cubit.dart';
+import '../../controller/cubit/text_field_cubit.dart';
 
 class MessageReplyPreview extends StatelessWidget {
   const MessageReplyPreview({
@@ -16,12 +14,10 @@ class MessageReplyPreview extends StatelessWidget {
   final String name;
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<ChatCubit, ChatState>(
-      listener: (context, state) {
-        // TODO: implement listener
-      },
+    return BlocConsumer<TextFieldCubit, TextFieldState>(
+      listener: (context, state) {},
       builder: (context, state) {
-        ChatCubit cubit = ChatCubit.get(context);
+        TextFieldCubit cubit = TextFieldCubit.get(context);
         late String message;
         switch (cubit.messageType) {
           case MessageEnum.image:
@@ -79,7 +75,7 @@ class MessageReplyPreview extends StatelessWidget {
                               size: 20.sp,
                             ),
                             onTap: () {
-                              ChatCubit.get(context).cancelReply();
+                              TextFieldCubit.get(context).cancelReply();
                             },
                           ),
                         ],

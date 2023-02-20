@@ -1,6 +1,6 @@
-import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_contacts/contact.dart';
+// ignore: depend_on_referenced_packages
 import 'package:meta/meta.dart';
 import 'package:whatsapp_clone/features/select_contacts/data/repository/contacts_repository.dart';
 

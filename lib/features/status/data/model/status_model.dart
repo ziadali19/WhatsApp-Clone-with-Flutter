@@ -1,5 +1,3 @@
-import 'package:intl/intl.dart';
-
 class StatusModel {
   final String uID;
   final String userName;

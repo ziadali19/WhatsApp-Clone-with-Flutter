@@ -1,11 +1,9 @@
-import 'dart:ffi';
-
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:whatsapp_clone/core/network/failure.dart';
 import 'package:whatsapp_clone/core/network/network_exception.dart';
-import 'package:whatsapp_clone/core/utilis/constants.dart';
+
 import 'package:whatsapp_clone/features/auth/data/remote_data_source/auth_remote_data_source.dart';
 
 import '../model/user_model.dart';

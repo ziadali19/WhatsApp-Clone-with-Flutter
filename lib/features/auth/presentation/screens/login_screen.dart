@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:whatsapp_clone/core/common/custom_button.dart';
 import 'package:whatsapp_clone/core/utilis/constants.dart';
-import 'package:whatsapp_clone/features/auth/presentation/screens/otb_screen.dart';
 
 import '../../controller/cubit/auth_cubit.dart';
 

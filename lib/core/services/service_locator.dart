@@ -13,6 +13,7 @@ import '../../features/call/data/remote_data_source/call_remote_data_source.dart
 import '../../features/call/data/repository/call_repository.dart';
 import '../../features/chat/controller/cubit/chat_cubit.dart';
 
+import '../../features/chat/controller/cubit/text_field_cubit.dart';
 import '../../features/chat/data/remote_data_source/chat_remote_data_source.dart';
 import '../../features/chat/data/repository/chat_repository.dart';
 import '../../features/group/controller/cubit/group_cubit.dart';
@@ -85,5 +86,7 @@ class ServicesLocator {
     sl.registerLazySingleton<BaseCallRepository>(() => CallRepository(sl()));
     sl.registerLazySingleton<BaseCallRemoteDataSource>(
         () => CallRemoteDataSource(FirebaseFirestore.instance, sl()));
+
+    sl.registerFactory(() => TextFieldCubit(sl(), sl()));
   }
 }

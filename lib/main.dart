@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,9 +19,9 @@ import 'features/auth/controller/cubit/auth_cubit.dart';
 import 'features/auth/controller/cubit/otb_cubit.dart';
 import 'features/auth/controller/cubit/user_information_cubit.dart';
 import 'features/chat/controller/cubit/chat_cubit.dart';
+import 'features/chat/controller/cubit/text_field_cubit.dart';
 import 'features/group/controller/cubit/group_cubit.dart';
 import 'features/layout/controller/cubit/layout_cubit.dart';
-import 'features/select_contacts/controller/cubit/contacts_cubit.dart';
 import 'features/status/controller/cubit/status_cubit.dart';
 
 void main() async {
@@ -56,9 +55,6 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => sl<LayoutCubit>(),
-        ),
-        BlocProvider(
-          create: (context) => sl<ChatCubit>()..getUserData(),
         ),
         BlocProvider(
           create: (context) => sl<GroupCubit>()..getContacts(),

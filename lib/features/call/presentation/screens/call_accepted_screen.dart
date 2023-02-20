@@ -19,17 +19,19 @@ class CallAcceptedScreen extends StatefulWidget {
 
 class _CallAcceptedScreenState extends State<CallAcceptedScreen> {
   AgoraClient? agoraClient;
+  String baseUrl = '';
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     agoraClient = AgoraClient(
         agoraConnectionData: AgoraConnectionData(
-            appId: AgoraConfig.appId, channelName: widget.channelId));
+            appId: AgoraConfig.appId,
+            channelName: widget.channelId,
+            tokenUrl: baseUrl));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return const Scaffold();
   }
 }

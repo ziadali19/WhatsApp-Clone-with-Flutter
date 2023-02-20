@@ -4,12 +4,12 @@ import 'dart:io';
 
 import 'package:dartz/dartz.dart' as dartz;
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:whatsapp_clone/core/utilis/constants.dart';
 import 'package:whatsapp_clone/features/chat/data/repository/chat_repository.dart';
 import 'package:whatsapp_clone/features/group/presentation/screens/create_group_screen.dart';
-import 'package:whatsapp_clone/features/layout/controller/cubit/layout_cubit.dart';
+
 import 'package:whatsapp_clone/features/status/presentation/screens/status_contacts_screen.dart';
 
 import '../../../../core/network/failure.dart';
@@ -29,6 +29,7 @@ class LayoutScreen extends StatefulWidget {
 class _LayoutScreenState extends State<LayoutScreen>
     with WidgetsBindingObserver, TickerProviderStateMixin {
   late TabController tabController;
+  IconData? iconData = Icons.comment_rounded;
   @override
   void initState() {
     super.initState();
@@ -102,6 +103,17 @@ class _LayoutScreenState extends State<LayoutScreen>
               ),
             ],
             bottom: TabBar(
+              onTap: (value) {
+                if (value == 0) {
+                  setState(() {
+                    iconData = Icons.comment_rounded;
+                  });
+                } else {
+                  setState(() {
+                    iconData = Icons.camera_alt_outlined;
+                  });
+                }
+              },
               controller: tabController,
               indicatorColor: AppConstants.tabColor,
               indicatorWeight: 4,
@@ -128,14 +140,14 @@ class _LayoutScreenState extends State<LayoutScreen>
             children: const [
               ContactsList(),
               StatusContactsScreen(),
-              Text('calls')
+              SizedBox()
             ],
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () async {
               if (tabController.index == 0) {
                 Navigator.pushNamed(context, ContactsScreen.routeName);
-              } else {
+              } else if (tabController.index == 1) {
                 File? pickedStory = await AppConstants.imagePicker(context);
                 if (pickedStory != null) {
                   Navigator.pushNamed(context, ConfirmStatusScreen.routeName,
@@ -144,8 +156,8 @@ class _LayoutScreenState extends State<LayoutScreen>
               }
             },
             backgroundColor: AppConstants.tabColor,
-            child: const Icon(
-              Icons.comment_rounded,
+            child: Icon(
+              iconData,
               color: Colors.white,
             ),
           )),

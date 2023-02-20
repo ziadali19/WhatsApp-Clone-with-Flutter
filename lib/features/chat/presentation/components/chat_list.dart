@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
-import 'package:whatsapp_clone/core/common/enums/messgae_enum.dart';
 
 import 'package:whatsapp_clone/features/chat/data/model/message_model.dart';
 import 'package:whatsapp_clone/features/chat/presentation/components/sender_message_card.dart';

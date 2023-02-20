@@ -1,4 +1,3 @@
-import 'package:intl/intl.dart';
 import 'package:whatsapp_clone/core/common/enums/messgae_enum.dart';
 
 class MessageModel {

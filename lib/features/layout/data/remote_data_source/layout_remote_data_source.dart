@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_contacts/contact.dart';
+
 import 'package:whatsapp_clone/core/network/network_exception.dart';
 import 'package:whatsapp_clone/core/utilis/constants.dart';
 import 'package:whatsapp_clone/features/chat/data/model/chat_contact_model.dart';

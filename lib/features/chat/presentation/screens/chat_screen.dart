@@ -3,12 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:whatsapp_clone/core/utilis/constants.dart';
 import 'package:whatsapp_clone/features/auth/data/model/user_model.dart';
-import 'package:whatsapp_clone/features/call/presentation/screens/call_screen.dart';
 
 import '../../../../core/services/service_locator.dart';
-
 import '../../../call/controller/cubit/call_cubit.dart';
 import '../../controller/cubit/chat_cubit.dart';
+import '../../controller/cubit/text_field_cubit.dart';
 import '../components/bottom_chat_text_field.dart';
 import '../components/chat_list.dart';
 
@@ -29,13 +28,17 @@ class ChatScreen extends StatelessWidget {
   static const routeName = '/chat-screen';
   @override
   Widget build(BuildContext context) {
-    return CallScreen(
-      scaffold: Scaffold(
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => sl<ChatCubit>()..getUserData()),
+        BlocProvider(create: (context) => sl<TextFieldCubit>()..getUserData())
+      ],
+      child: Scaffold(
         appBar: AppBar(
           backgroundColor: AppConstants.appBarColor,
           title: BlocConsumer<ChatCubit, ChatState>(
             listener: (context, state) {
-              if (state is GetUserDataError) {
+              if (state is GetUserDataForChatError) {
                 AppConstants.showSnackBar(state.message, context, Colors.red);
               }
             },

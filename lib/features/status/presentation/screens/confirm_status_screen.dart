@@ -1,11 +1,9 @@
 import 'dart:io';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:whatsapp_clone/core/utilis/constants.dart';
-import 'package:whatsapp_clone/features/layout/presentation/screens/layout_screen.dart';
 
 import '../../controller/cubit/status_cubit.dart';
 
