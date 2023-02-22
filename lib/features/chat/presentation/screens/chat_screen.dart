@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -35,6 +36,7 @@ class ChatScreen extends StatelessWidget {
       ],
       child: Scaffold(
         appBar: AppBar(
+          titleSpacing: 0,
           backgroundColor: AppConstants.appBarColor,
           title: BlocConsumer<ChatCubit, ChatState>(
             listener: (context, state) {
@@ -44,38 +46,53 @@ class ChatScreen extends StatelessWidget {
             },
             builder: (context, state) {
               ChatCubit cubit = ChatCubit.get(context);
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              return Row(
                 children: [
-                  Text(name!,
-                      style: TextStyle(
-                          fontWeight: FontWeight.w500, fontSize: 17.sp)),
-                  isGroupChat
-                      ? const SizedBox()
-                      : StreamBuilder<UserModel>(
-                          stream: cubit.getAnyUserData(uID!, context),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return SizedBox(
-                                width: 7.w,
-                                height: 7.h,
-                                child: const CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: AppConstants.tabColor,
-                                ),
-                              );
-                            } else if (snapshot.hasError) {
-                              return const SizedBox();
-                            } else {
-                              return Text(
-                                snapshot.data!.isOnline! ? 'Online' : 'Offline',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 13.sp),
-                              );
-                            }
-                          })
+                  CircleAvatar(
+                    radius: 20.r,
+                    backgroundImage: profilePic!.isEmpty
+                        ? const AssetImage('assets/images/profile.jpg')
+                        : NetworkImage(profilePic!) as ImageProvider,
+                  ),
+                  SizedBox(
+                    width: 10.w,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(name!,
+                          style: TextStyle(
+                              fontWeight: FontWeight.w500, fontSize: 17.sp)),
+                      isGroupChat
+                          ? const SizedBox()
+                          : StreamBuilder<UserModel>(
+                              stream: cubit.getAnyUserData(uID!, context),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return SizedBox(
+                                    width: 7.w,
+                                    height: 7.h,
+                                    child: const CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: AppConstants.tabColor,
+                                    ),
+                                  );
+                                } else if (snapshot.hasError) {
+                                  return const SizedBox();
+                                } else {
+                                  return Text(
+                                    snapshot.data!.isOnline!
+                                        ? 'Online'
+                                        : 'Offline',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 13.sp),
+                                  );
+                                }
+                              })
+                    ],
+                  ),
                 ],
               );
             },

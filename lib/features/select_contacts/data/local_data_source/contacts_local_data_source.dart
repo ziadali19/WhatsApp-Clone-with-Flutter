@@ -51,7 +51,8 @@ class ContactsLocalDataSource extends BaseContactsLocalDataSource {
               'uID': usersModel.uID,
               'name': usersModel.name,
               'isOnline': usersModel.isOnline,
-              'profilePic': usersModel.profilePic
+              'profilePic': usersModel.profilePic,
+              'isGroupChat': false
             },
           );
         }

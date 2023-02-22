@@ -36,16 +36,17 @@ final sl = GetIt.instance;
 
 class ServicesLocator {
   static void init() {
-    sl.registerFactory(() =>
-        AuthCubit(sl(), FirebaseAuth.instance, FirebaseFirestore.instance));
+    sl.registerLazySingleton<FirebaseFirestore>(
+        () => FirebaseFirestore.instance);
+    sl.registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance);
+
+    sl.registerFactory(() => AuthCubit(sl(), sl(), sl()));
     sl.registerFactory(() => OtbCubit(sl()));
     sl.registerLazySingleton<BaseAuthRepository>(() => AuthRepository(sl()));
-    sl.registerLazySingleton<BaseAuthRemoteDataSource>(() =>
-        AuthRemoteDataSource(
-            FirebaseAuth.instance, FirebaseFirestore.instance));
+    sl.registerLazySingleton<BaseAuthRemoteDataSource>(
+        () => AuthRemoteDataSource(sl(), sl()));
 
-    sl.registerFactory(
-        () => UserInformationCubit(sl(), FirebaseAuth.instance, sl()));
+    sl.registerFactory(() => UserInformationCubit(sl(), sl(), sl()));
 
     sl.registerLazySingleton<BaseFirebaseStorageRepository>(
         () => FirebaseStorageRepository(sl()));
@@ -60,32 +61,30 @@ class ServicesLocator {
 
     sl.registerFactory(() => ChatCubit(sl(), sl()));
     sl.registerLazySingleton<BaseChatRepository>(() => ChatRepository(sl()));
-    sl.registerLazySingleton<BaseChatRemoteDataSource>(() =>
-        ChatRemoteDataSource(
-            FirebaseFirestore.instance, FirebaseAuth.instance, sl()));
+    sl.registerLazySingleton<BaseChatRemoteDataSource>(
+        () => ChatRemoteDataSource(sl(), sl(), sl()));
 
     sl.registerFactory(() => LayoutCubit(sl(), sl()));
     sl.registerLazySingleton<BaseLayoutRepository>(
         () => LayoutRepository(sl()));
     sl.registerLazySingleton<BaseLayoutRemoteDataSource>(
-        () => LayoutRemoteDataSource(FirebaseFirestore.instance));
+        () => LayoutRemoteDataSource(sl()));
 
     sl.registerFactory(() => StatusCubit(sl(), sl()));
     sl.registerLazySingleton<BaseStatusRepository>(
         () => StatusRepository(sl()));
-    sl.registerLazySingleton<BaseStatusRemoteDataSource>(() =>
-        StatusRemoteDataSource(
-            FirebaseFirestore.instance, FirebaseAuth.instance, sl()));
+    sl.registerLazySingleton<BaseStatusRemoteDataSource>(
+        () => StatusRemoteDataSource(sl(), sl(), sl()));
 
     sl.registerFactory(() => GroupCubit(sl(), sl()));
     sl.registerLazySingleton<BaseGroupRepository>(() => GroupRepository(sl()));
     sl.registerLazySingleton<BaseGroupRemoteDataSource>(
-        () => GroupRemoteDataSource(FirebaseFirestore.instance, sl()));
+        () => GroupRemoteDataSource(sl(), sl()));
 
     sl.registerFactory(() => CallCubit(sl(), sl()));
     sl.registerLazySingleton<BaseCallRepository>(() => CallRepository(sl()));
     sl.registerLazySingleton<BaseCallRemoteDataSource>(
-        () => CallRemoteDataSource(FirebaseFirestore.instance, sl()));
+        () => CallRemoteDataSource(sl(), sl()));
 
     sl.registerFactory(() => TextFieldCubit(sl(), sl()));
   }

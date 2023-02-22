@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,8 +20,7 @@ import 'core/utilis/themes.dart';
 import 'features/auth/controller/cubit/auth_cubit.dart';
 import 'features/auth/controller/cubit/otb_cubit.dart';
 import 'features/auth/controller/cubit/user_information_cubit.dart';
-import 'features/chat/controller/cubit/chat_cubit.dart';
-import 'features/chat/controller/cubit/text_field_cubit.dart';
+
 import 'features/group/controller/cubit/group_cubit.dart';
 import 'features/layout/controller/cubit/layout_cubit.dart';
 import 'features/status/controller/cubit/status_cubit.dart';
@@ -28,12 +29,13 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   ServicesLocator.init();
+
   await CasheHelper.init();
   AppConstants.uID = CasheHelper.getData('uID') as String?;
   AppConstants.user = CasheHelper.getData('user') as String?;
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   Bloc.observer = MyBlocObserver();
-
+  print(sl<FirebaseAuth>().currentUser?.phoneNumber);
   runApp(const MyApp());
 }
 

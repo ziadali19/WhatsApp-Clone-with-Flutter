@@ -61,9 +61,9 @@ class ChatCubit extends Cubit<ChatState> {
   }
 
   setMessagesToSeen(
-      String receiverId, String messageId, BuildContext context) async {
+      String senderId, String messageId, BuildContext context) async {
     Either<Failure, void> result =
-        await baseChatRepository.setMessagesToSeen(receiverId, messageId);
+        await baseChatRepository.setMessagesToSeen(senderId, messageId);
     result.fold((l) {
       AppConstants.showSnackBar(l.message, context, Colors.red);
     }, (r) {});

@@ -77,7 +77,7 @@ class _ChatListState extends State<ChatList> {
                                 snapshot.data![index].recieverId ==
                                     AppConstants.uID) {
                               cubit.setMessagesToSeen(
-                                  snapshot.data![index].recieverId,
+                                  snapshot.data![index].senderId,
                                   snapshot.data![index].messageId,
                                   context);
                             }

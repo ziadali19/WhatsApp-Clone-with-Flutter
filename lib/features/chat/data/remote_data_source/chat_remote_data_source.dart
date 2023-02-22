@@ -16,7 +16,7 @@ import 'package:whatsapp_clone/features/chat/data/model/message_model.dart';
 import '../../../../core/utilis/constants.dart';
 
 abstract class BaseChatRemoteDataSource {
-  Future<void> setMessagesToSeen(String receiverId, String messageId);
+  Future<void> setMessagesToSeen(String senderId, String messageId);
   Future<void> userStatus(bool isOnline);
   Future<void> sendTextMessage(
       {required UserModel senderUser,
@@ -370,20 +370,20 @@ class ChatRemoteDataSource extends BaseChatRemoteDataSource {
   }
 
   @override
-  Future<void> setMessagesToSeen(String receiverId, String messageId) async {
+  Future<void> setMessagesToSeen(String senderId, String messageId) async {
     try {
       await firebaseFirestore
           .collection('users')
           .doc(AppConstants.uID)
           .collection('chats')
-          .doc(receiverId)
+          .doc(senderId)
           .collection('messages')
           .doc(messageId)
           .update({'isSeen': true});
 
       await firebaseFirestore
           .collection('users')
-          .doc(receiverId)
+          .doc(senderId)
           .collection('chats')
           .doc(AppConstants.uID)
           .collection('messages')
