@@ -2,6 +2,8 @@
 
 Full Stack Whatsapp Clone with Flutter and Firebase & Bloc(cubit) & MVVM design pattern
 
+## Application Video Review >> https://drive.google.com/file/d/1PUkb7GML2AxztIPk58M2B6a-djlKElfw/view?usp=sharing
+
 ## Features
 
 - OTP Authentication
